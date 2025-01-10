@@ -1,27 +1,19 @@
-import React from "react";
-import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
-import PatientsPage from "./pages/PatientsPage";
-import DoctorsPage from "./pages/DoctorsPage";
-import HospitalsPage from "./pages/HospitalsPage";
-import LogsPage from "./pages/LogsPage";
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import DoctorsPage from './pages/DoctorsPage';
+import Navbar from './components/Navbar';
 
 function App() {
   return (
     <Router>
-      <nav>
-        <ul>
-          <li><Link to="/patients">Patients</Link></li>
-          <li><Link to="/doctors">Doctors</Link></li>
-          <li><Link to="/hospitals">Hospitals</Link></li>
-          <li><Link to="/logs">Logs</Link></li>
-        </ul>
-      </nav>
-      <Routes>
-        <Route path="/patients" element={<PatientsPage />} />
-        <Route path="/doctors" element={<DoctorsPage />} />
-        <Route path="/hospitals" element={<HospitalsPage />} />
-        <Route path="/logs" element={<LogsPage />} />
-      </Routes>
+      <div className="App">
+        <Navbar />
+        <h1>Medical Admin Panel</h1>
+        <Routes>
+          <Route path="/" element={<h2>Welcome to Admin Panel</h2>} />
+          <Route path="/doctors" element={<DoctorsPage />} />
+        </Routes>
+      </div>
     </Router>
   );
 }
