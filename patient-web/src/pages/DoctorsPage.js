@@ -8,7 +8,7 @@ const DoctorsPage = () => {
 
     useEffect(() => {
         const fetchDoctors = async () => {
-            const response = await fetch('/api/doctors'); // Замените на ваш API
+            const response = await fetch('/api/Doctors'); // Замените на ваш API
             const data = await response.json();
             setDoctors(data);
         };

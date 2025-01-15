@@ -7,7 +7,7 @@ const HospitalProfilePage = () => {
 
     useEffect(() => {
         const fetchHospital = async () => {
-            const response = await fetch(`/api/hospitals/${id}`); // Замените на ваш API
+            const response = await fetch(`/api/Hospitals/${id}`); // Замените на ваш API
             const data = await response.json();
             setHospital(data);
         };
