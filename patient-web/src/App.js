@@ -8,6 +8,7 @@ import HospitalProfilePage from './pages/HospitalProfilePage';
 import UserProfilePage from './pages/UserProfilePage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
+import MainPage from './pages/MainPage';
 
 const App = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -62,6 +63,7 @@ const App = () => {
 
                 {/* Routing Pages */}
                 <Routes>
+                    <Route path="/" element={<MainPage />} />
                     <Route path="/doctors" element={<DoctorsPage />} />
                     <Route path="/hospitals" element={<HospitalsPage />} />
                     <Route path="/doctor/:id" element={<DoctorProfilePage />} />
