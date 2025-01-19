@@ -35,15 +35,6 @@ const App = () => {
 
                             {/* Right Side - Search Input and Authentication */}
                             <ul className="navbar-nav ms-auto d-flex align-items-center">
-                                {/* Search Input */}
-                                <form className="d-flex mx-2">
-                                    <input
-                                        type="text"
-                                        placeholder="Search"
-                                        className="form-control"
-                                        style={{ width: '200px' }} // Adjust width as needed
-                                    />
-                                </form>
 
                                 {/* Login/Signup or User Profile */}
                                 {isAuthenticated ? (
