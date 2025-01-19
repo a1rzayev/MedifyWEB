@@ -2,32 +2,43 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 const HospitalProfilePage = () => {
-    const { id } = useParams();
+    const { id } = useParams(); // Getting the hospital ID from the URL parameters
     const [hospital, setHospital] = useState(null);
 
     useEffect(() => {
         const fetchHospital = async () => {
-            const response = await fetch(`/api/Hospitals/${id}`); // Замените на ваш API
-            const data = await response.json();
-            setHospital(data);
+            try {
+                const response = await fetch(`http://localhost:5250/Hospital/${id}`); // Correct API URL
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                setHospital(data);
+            } catch (error) {
+                console.error('Failed to fetch hospital data:', error);
+            }
         };
 
         fetchHospital();
-    }, [id]);
+    }, [id]); // Only refetch when the `id` parameter changes
 
     if (!hospital) {
-        return <div>Загрузка...</div>;
+        return <div className="text-center">Loading...</div>; // Show loading message if hospital data is not yet loaded
     }
 
     return (
-        <div style={{ padding: '20px' }}>
-            <h1>Профиль больницы</h1>
-            <h2>{hospital.name}</h2>
-            <p><strong>Адрес:</strong> {hospital.address}</p>
-            <p><strong>Электронная почта:</strong> {hospital.email}</p>
-            <p><strong>Телефоны:</strong> {hospital.phones.join(', ')}</p>
-            <p><strong>Веб-сайт:</strong> <a href={hospital.website} target="_blank" rel="noopener noreferrer">{hospital.website}</a></p>
-            <p><strong>Тип:</strong> {hospital.type}</p>
+        <div className="container mt-5">
+            <h1 className="text-center">Hospital Profile</h1>
+            <div className="card">
+                <div className="card-body">
+                    <h2 className="card-title">{hospital.name}</h2>
+                    <p><strong>Address:</strong> {hospital.address}</p>
+                    <p><strong>Email:</strong> {hospital.email}</p>
+                    <p><strong>Phone Numbers:</strong> {hospital.phones.join(', ')}</p>
+                    <p><strong>Website:</strong> <a href={hospital.website} target="_blank" rel="noopener noreferrer">{hospital.website}</a></p>
+                    <p><strong>Type:</strong> {hospital.type}</p>
+                </div>
+            </div>
         </div>
     );
 };
