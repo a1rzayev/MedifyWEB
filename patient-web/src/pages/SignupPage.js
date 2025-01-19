@@ -9,6 +9,7 @@ const SignupPage = () => {
         password: '',
     });
 
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -16,10 +17,29 @@ const SignupPage = () => {
         setUser({ ...user, [name]: value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Registering:', user);
-        // You can make the registration API request here
+
+        // Perform the fetch request to the API
+        try {
+            const response = await fetch('http://localhost:5250/Auth/Signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(user),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to sign up');
+            }
+
+            // Optionally, you can navigate to the login page after successful signup
+            navigate('/login');
+        } catch (err) {
+            setError('An error occurred during signup. Please try again.');
+            console.error('Signup error:', err);
+        }
     };
 
     const handleLoginRedirect = () => {
@@ -29,6 +49,7 @@ const SignupPage = () => {
     return (
         <div className="container py-4">
             <h1 className="mb-4">Sign Up</h1>
+            {error && <div className="alert alert-danger">{error}</div>}
             <form onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: '0 auto' }}>
                 <div className="mb-3">
                     <label className="form-label">Name</label>
@@ -87,6 +108,7 @@ const SignupPage = () => {
                         Login
                     </a>
                 </p>
+
             </div>
         </div>
     );
