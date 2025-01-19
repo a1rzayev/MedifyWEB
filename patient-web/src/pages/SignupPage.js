@@ -7,6 +7,7 @@ const SignupPage = () => {
         surname: '',
         email: '',
         password: '',
+        role: 'Patient'
     });
 
     const [error, setError] = useState('');
