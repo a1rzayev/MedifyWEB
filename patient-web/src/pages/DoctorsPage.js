@@ -4,11 +4,12 @@ import { useNavigate } from 'react-router-dom';
 const DoctorsPage = () => {
     const [doctors, setDoctors] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedSpecialty, setSelectedSpecialty] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchDoctors = async () => {
-            const response = await fetch('/api/Doctors'); // Замените на ваш API
+            const response = await fetch('/api/Doctors'); // Replace with your API
             const data = await response.json();
             setDoctors(data);
         };
@@ -16,25 +17,49 @@ const DoctorsPage = () => {
         fetchDoctors();
     }, []);
 
-    const filteredDoctors = doctors.filter(doctor =>
-        doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        doctor.surname.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredDoctors = doctors.filter(doctor => {
+        const matchesName = doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                            doctor.surname.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSpecialty = selectedSpecialty ? doctor.speciality === selectedSpecialty : true;
+        return matchesName && matchesSpecialty;
+    });
+
+    const specialties = [
+        'Cardiologist', 'Neurologist', 'Endocrinologist', 'Pediatrician', 'Surgeon', 
+        'Gynecologist', 'Oncologist', 'Dermatologist', 'Orthopedic', 'Psychiatrist', 
+        'Rheumatologist', 'InfectiousDiseaseSpecialist', 'Urologist', 'Pulmonologist', 
+        'Gastroenterologist', 'Otorhinolaryngologist', 'Radiologist', 'Anesthesiologist', 
+        'Pathologist', 'Allergist', 'Hematologist', 'Geriatrician'
+    ];
 
     return (
         <div style={{ padding: '20px' }}>
-            <h1>Список докторов</h1>
+            <h1>Doctors List</h1>
 
-            {/* Строка поиска */}
+            {/* Search bar */}
             <input
                 type="text"
-                placeholder="Поиск по имени или фамилии..."
+                placeholder="Search by name or surname..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 style={{ padding: '10px', marginBottom: '20px', width: '100%' }}
             />
 
-            {/* Карточки докторов */}
+            {/* Specialty filter */}
+            <select
+                value={selectedSpecialty}
+                onChange={(e) => setSelectedSpecialty(e.target.value)}
+                style={{ padding: '10px', marginBottom: '20px', width: '100%' }}
+            >
+                <option value="">Select Specialty</option>
+                {specialties.map((specialty) => (
+                    <option key={specialty} value={specialty}>
+                        {specialty}
+                    </option>
+                ))}
+            </select>
+
+            {/* Doctors cards */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
                 {filteredDoctors.map(doctor => (
                     <div
@@ -55,7 +80,7 @@ const DoctorsPage = () => {
                             style={{ width: '100%', borderRadius: '8px', marginBottom: '10px' }}
                         />
                         <h3>{doctor.name} {doctor.surname}</h3>
-                        <p><strong>Специальность:</strong> {doctor.speciality}</p>
+                        <p><strong>Specialty:</strong> {doctor.speciality}</p>
                     </div>
                 ))}
             </div>
