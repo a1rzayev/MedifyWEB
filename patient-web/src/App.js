@@ -1,42 +1,83 @@
-import React from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import DoctorListPage from './pages/DoctorsPage';
-import HospitalListPage from './pages/HospitalsPage';
+import DoctorsPage from './pages/DoctorsPage';
+import HospitalsPage from './pages/HospitalsPage';
 import DoctorProfilePage from './pages/DoctorProfilePage';
 import HospitalProfilePage from './pages/HospitalProfilePage';
 import UserProfilePage from './pages/UserProfilePage';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
 
 const App = () => {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
     return (
         <Router>
-            <div style={{ padding: '20px' }}>
-                <nav style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', gap: '20px' }}>
-                        <Link to="/doctors" style={{ textDecoration: 'none', color: 'blue' }}>Doctors</Link>
-                        <Link to="/hospitals" style={{ textDecoration: 'none', color: 'blue' }}>Hospitals</Link>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                        <input
-                            type="text"
-                            placeholder="Search"
-                            style={{ padding: '5px', borderRadius: '4px', border: '1px solid #ccc' }}
-                        />
-                        <Link to="/user-profile" style={{ textDecoration: 'none', color: 'blue' }}>
-                            <img
-                                src="https://via.placeholder.com/40"
-                                alt="User Avatar"
-                                style={{ borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer' }}
-                            />
-                        </Link>
+            <div className="container-fluid px-4 py-4">
+                {/* Navbar */}
+                <nav className="navbar navbar-expand-lg navbar-light bg-primary rounded mb-4">
+                    <div className="container-fluid">
+                        <Link to="/" className="navbar-brand text-white">Medify</Link>
+                        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                            <span className="navbar-toggler-icon"></span>
+                        </button>
+                        <div className="collapse navbar-collapse" id="navbarNav">
+                            {/* Left Side - Doctors and Hospitals */}
+                            <ul className="navbar-nav me-auto">
+                                <li className="nav-item">
+                                    <Link to="/doctors" className="nav-link text-white">Doctors</Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link to="/hospitals" className="nav-link text-white">Hospitals</Link>
+                                </li>
+                            </ul>
+
+                            {/* Right Side - Search Input and Authentication */}
+                            <ul className="navbar-nav ms-auto d-flex align-items-center">
+                                {/* Search Input */}
+                                <form className="d-flex mx-2">
+                                    <input
+                                        type="text"
+                                        placeholder="Search"
+                                        className="form-control"
+                                        style={{ width: '200px' }} // Adjust width as needed
+                                    />
+                                </form>
+
+                                {/* Login/Signup or User Profile */}
+                                {isAuthenticated ? (
+                                    <li className="nav-item">
+                                        <Link to="/user-profile" className="nav-link text-white d-flex align-items-center">
+                                            <img
+                                                src="https://via.placeholder.com/40"
+                                                alt="User Avatar"
+                                                className="rounded-circle me-2"
+                                                style={{ width: '40px', height: '40px' }}
+                                            />
+                                            Profile
+                                        </Link>
+                                    </li>
+                                ) : (
+                                    <li className="nav-item d-flex">
+                                        <Link to="/login" className="nav-link text-white">Login</Link>
+                                        <Link to="/signup" className="nav-link text-white">Sign Up</Link>
+                                    </li>
+                                )}
+                            </ul>
+                        </div>
                     </div>
                 </nav>
 
+                {/* Routing Pages */}
                 <Routes>
-                    <Route path="/doctors" element={<DoctorListPage />} />
-                    <Route path="/hospitals" element={<HospitalListPage />} />
+                    <Route path="/doctors" element={<DoctorsPage />} />
+                    <Route path="/hospitals" element={<HospitalsPage />} />
                     <Route path="/doctor/:id" element={<DoctorProfilePage />} />
                     <Route path="/hospital/:id" element={<HospitalProfilePage />} />
                     <Route path="/user-profile" element={<UserProfilePage />} />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/signup" element={<SignupPage />} />
                 </Routes>
             </div>
         </Router>
