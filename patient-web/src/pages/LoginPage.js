@@ -15,7 +15,7 @@ const LoginPage = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch('http://localhost:5250/Auth/Login', {
+            const response = await fetch('http://localhost:5250/api/Auth/Login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

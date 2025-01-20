@@ -20,22 +20,20 @@ const SignupPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        // Perform the fetch request to the API
         try {
-            const response = await fetch('http://localhost:5250/Auth/Signup', {
+            const response = await fetch(`http://localhost:5250/api/Auth/Signup`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(user),
             });
 
+            const data = await response.json();
+
             if (!response.ok) {
-                throw new Error('Failed to sign up');
+                setError(data.errors ? data.errors.join(', ') : data.message || 'Failed to sign up.');
+                return;
             }
 
-            // Optionally, you can navigate to the login page after successful signup
             navigate('/login');
         } catch (err) {
             setError('An error occurred during signup. Please try again.');
@@ -50,12 +48,13 @@ const SignupPage = () => {
     return (
         <div className="container py-4">
             <h1 className="mb-4">Sign Up</h1>
-            {error && <div className="alert alert-danger">{error}</div>}
+            {error && <div className="alert alert-danger" role="alert">{error}</div>}
             <form onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: '0 auto' }}>
                 <div className="mb-3">
-                    <label className="form-label">Name</label>
+                    <label className="form-label" htmlFor="name">Name</label>
                     <input
                         type="text"
+                        id="name"
                         name="name"
                         value={user.name}
                         onChange={handleChange}
@@ -65,9 +64,10 @@ const SignupPage = () => {
                 </div>
 
                 <div className="mb-3">
-                    <label className="form-label">Surname</label>
+                    <label className="form-label" htmlFor="surname">Surname</label>
                     <input
                         type="text"
+                        id="surname"
                         name="surname"
                         value={user.surname}
                         onChange={handleChange}
@@ -77,9 +77,10 @@ const SignupPage = () => {
                 </div>
 
                 <div className="mb-3">
-                    <label className="form-label">Email</label>
+                    <label className="form-label" htmlFor="email">Email</label>
                     <input
                         type="email"
+                        id="email"
                         name="email"
                         value={user.email}
                         onChange={handleChange}
@@ -89,9 +90,10 @@ const SignupPage = () => {
                 </div>
 
                 <div className="mb-3">
-                    <label className="form-label">Password</label>
+                    <label className="form-label" htmlFor="password">Password</label>
                     <input
                         type="password"
+                        id="password"
                         name="password"
                         value={user.password}
                         onChange={handleChange}
@@ -100,16 +102,21 @@ const SignupPage = () => {
                     />
                 </div>
 
+
                 <button type="submit" className="btn btn-primary w-100 mt-3">Sign Up</button>
             </form>
 
             <div className="mt-3 text-center">
-                <p>Do you already have an account?
-                    <a className="btn-link text-center" onClick={handleLoginRedirect}>
+                <p>
+                    Already have an account?{' '}
+                    <button
+                        type="button"
+                        className="btn btn-link"
+                        onClick={handleLoginRedirect}
+                    >
                         Login
-                    </a>
+                    </button>
                 </p>
-
             </div>
         </div>
     );

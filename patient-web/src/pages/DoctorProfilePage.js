@@ -8,7 +8,7 @@ const DoctorProfilePage = () => {
     useEffect(() => {
         const fetchDoctor = async () => {
             try {
-                const response = await fetch(`http://localhost:5250/Doctor/${id}`); // Correct API URL
+                const response = await fetch(`http://localhost:5250/api/Doctor/${id}`); // Correct API URL
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }

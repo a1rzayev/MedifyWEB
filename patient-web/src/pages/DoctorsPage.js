@@ -9,7 +9,7 @@ const DoctorsPage = () => {
 
     useEffect(() => {
         const fetchDoctors = async () => {
-            const response = await fetch('/api/Doctors'); // Replace with your API
+            const response = await fetch('http://localhost:5250/api/Doctor'); // Replace with your API
             const data = await response.json();
             setDoctors(data);
         };

@@ -7,7 +7,7 @@ const MainPage = () => {
     
     useEffect(() => {
         const fetchLogs = async () => {
-            const response = await fetch('http://localhost:5250/Log'); // Replace with the correct endpoint
+            const response = await fetch('http://localhost:5250/api/Log'); // Replace with the correct endpoint
             const data = await response.json();
             setLogs(data);
         };

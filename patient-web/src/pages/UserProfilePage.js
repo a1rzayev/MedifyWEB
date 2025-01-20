@@ -32,7 +32,7 @@ const UserProfilePage = () => {
         if (isAuthenticated) {
             const userId = 1; // Example: you can get the user ID dynamically if needed
 
-            axios.get(`http://localhost:5250/Patient/${userId}`)
+            axios.get(`http://localhost:5250/api/Patient/${userId}`)
                 .then(response => {
                     setUser(response.data);
                     setIsLoading(false);
