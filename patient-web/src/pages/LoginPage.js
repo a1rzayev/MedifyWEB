@@ -2,13 +2,18 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
-    const [credentials, setCredentials] = useState({ email: '', password: '' });
+    const [user, setuser] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setCredentials({ ...credentials, [name]: value });
+        setuser({ ...user, [name]: value });
+    };
+
+    const togglePasswordVisibility = () => {
+        setShowPassword((prevState) => !prevState);
     };
 
     const handleSubmit = async (e) => {
@@ -20,21 +25,21 @@ const LoginPage = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(credentials),
+                body: JSON.stringify(user),
             });
 
             if (!response.ok) {
                 throw new Error('Failed to login');
             }
 
-            const data = await response.json();
-            console.log('Login successful:', data);
 
-            // Optionally, you can store the token and redirect
-            // localStorage.setItem('token', data.token);
+            const { accessToken } = await response.json();
+
+            localStorage.setItem("accessToken", accessToken);
+
             navigate('/user-profile');
         } catch (err) {
-            setError('Invalid credentials or an error occurred. Please try again.');
+            setError('Invalid user or an error occurred. Please try again.');
             console.error('Login error:', err);
         }
     };
@@ -53,7 +58,7 @@ const LoginPage = () => {
                     <input
                         type="email"
                         name="email"
-                        value={credentials.email}
+                        value={user.email}
                         onChange={handleChange}
                         className="form-control"
                         required
@@ -62,14 +67,23 @@ const LoginPage = () => {
 
                 <div className="mb-3">
                     <label className="form-label">Password</label>
-                    <input
-                        type="password"
-                        name="password"
-                        value={credentials.password}
-                        onChange={handleChange}
-                        className="form-control"
-                        required
-                    />
+                    <div className="input-group">
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            name="password"
+                            value={user.password}
+                            onChange={handleChange}
+                            className="form-control"
+                            required
+                        />
+                        <button
+                            type="button"
+                            onClick={togglePasswordVisibility}
+                            className="btn btn-outline-secondary"
+                        >
+                            {showPassword ? "Hide" : "Show"}
+                        </button>
+                    </div>
                 </div>
 
                 <button type="submit" className="btn btn-primary w-100 mt-3">Login</button>
