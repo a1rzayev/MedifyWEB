@@ -19,7 +19,7 @@ const UserProfilePage = () => {
     const navigate = useNavigate();
 
     // Dummy authentication check (you can replace this with your actual logic)
-    const isAuthenticated = localStorage.getItem('authToken') !== null; // Replace with your actual authentication check
+    const isAuthenticated = localStorage.getItem('accessToken') !== null; // Replace with your actual authentication check
 
     useEffect(() => {
         if (!isAuthenticated) {

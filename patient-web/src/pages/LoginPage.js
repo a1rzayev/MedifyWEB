@@ -28,18 +28,21 @@ const LoginPage = () => {
                 body: JSON.stringify(user),
             });
 
+            const data = await response.json();
+
             if (!response.ok) {
-                throw new Error('Failed to login');
+                throw new Error('Login failed. Please check your credentials.');
             }
 
 
-            const { accessToken } = await response.json();
 
-            localStorage.setItem("accessToken", accessToken);
+            localStorage.setItem("accessToken", data.accessToken);
+            sessionStorage.setItem("refreshToken", data.refreshToken);
+
 
             navigate('/user-profile');
         } catch (err) {
-            setError('Invalid user or an error occurred. Please try again.');
+            setError('Login failed.');
             console.error('Login error:', err);
         }
     };

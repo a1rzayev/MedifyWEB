@@ -11,7 +11,9 @@ import SignupPage from './pages/SignupPage';
 import MainPage from './pages/MainPage';
 
 const App = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    const isAuthenticated = localStorage.getItem('accessToken') !== null; // Replace with your actual authentication check
+
 
     return (
         <Router>
