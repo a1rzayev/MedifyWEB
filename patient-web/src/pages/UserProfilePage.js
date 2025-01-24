@@ -18,8 +18,7 @@ const UserProfilePage = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    // Dummy authentication check (you can replace this with your actual logic)
-    const isAuthenticated = localStorage.getItem('accessToken') !== null; // Replace with your actual authentication check
+    const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem('accessToken') !== null);
 
     useEffect(() => {
         if (!isAuthenticated) {
@@ -58,8 +57,14 @@ const UserProfilePage = () => {
         }
     };
 
+    const handleLogout = (e) => {
+        localStorage.removeItem('accessToken');
+        setIsAuthenticated(false);
+        navigate('/login');
+        window.location.reload();
+    }
+
     const handleSave = () => {
-        // Save changes logic (for now just logs to the console)
         console.log('User data saved:', user);
     };
 
@@ -67,9 +72,9 @@ const UserProfilePage = () => {
         return <div>Loading...</div>;
     }
 
-    if (error) {
-        return <div>{error}</div>;
-    }
+    // if (error) {
+    //     return <div>{error}</div>;
+    // }
 
     return (
         <div className="container py-4">
@@ -166,6 +171,14 @@ const UserProfilePage = () => {
                         className="form-control"
                     />
                 </div>
+                <button
+                
+                    type="button"
+                    className="btn btn-primary mt-3"
+                    onClick={handleLogout}
+                >
+                    Logout
+                </button>
 
                 <button
                     type="button"

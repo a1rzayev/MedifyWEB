@@ -41,6 +41,7 @@ const LoginPage = () => {
 
 
             navigate('/user-profile');
+            window.location.reload();
         } catch (err) {
             setError('Login failed.');
             console.error('Login error:', err);

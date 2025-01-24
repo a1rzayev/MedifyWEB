@@ -1,5 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import DoctorsPage from './pages/DoctorsPage';
 import HospitalsPage from './pages/HospitalsPage';
@@ -11,9 +11,20 @@ import SignupPage from './pages/SignupPage';
 import MainPage from './pages/MainPage';
 
 const App = () => {
+    const [isAuthenticated, setIsAuthenticated] = useState(
+        localStorage.getItem('accessToken') !== null
+    );
 
-    const isAuthenticated = localStorage.getItem('accessToken') !== null; // Replace with your actual authentication check
+    useEffect(() => {
+        if (isAuthenticated !== (localStorage.getItem('accessToken') !== null)) {
+            window.location.reload();
+        }
+    }, [isAuthenticated]);
 
+    const handleLogout = () => {
+        localStorage.removeItem('accessToken');
+        setIsAuthenticated(false);
+    };
 
     return (
         <Router>
@@ -22,7 +33,15 @@ const App = () => {
                 <nav className="navbar navbar-expand-lg navbar-light bg-primary rounded mb-4">
                     <div className="container-fluid">
                         <Link to="/" className="navbar-brand text-white">Medify</Link>
-                        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <button
+                            className="navbar-toggler"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#navbarNav"
+                            aria-controls="navbarNav"
+                            aria-expanded="false"
+                            aria-label="Toggle navigation"
+                        >
                             <span className="navbar-toggler-icon"></span>
                         </button>
                         <div className="collapse navbar-collapse" id="navbarNav">
@@ -36,22 +55,31 @@ const App = () => {
                                 </li>
                             </ul>
 
-                            {/* Right Side - Search Input and Authentication */}
+                            {/* Right Side - Authentication */}
                             <ul className="navbar-nav ms-auto d-flex align-items-center">
-
-                                {/* Login/Signup or User Profile */}
                                 {isAuthenticated ? (
-                                    <li className="nav-item">
-                                        <Link to="/user-profile" className="nav-link text-white d-flex align-items-center">
-                                            <img
-                                                src="https://via.placeholder.com/40"
-                                                alt="User Avatar"
-                                                className="rounded-circle me-2"
-                                                style={{ width: '40px', height: '40px' }}
-                                            />
-                                            Profile
-                                        </Link>
-                                    </li>
+                                    <>
+                                        <li className="nav-item">
+                                            <Link to="/user-profile" className="nav-link text-white d-flex align-items-center">
+                                                <img
+                                                    src="https://via.placeholder.com/40"
+                                                    alt="User Avatar"
+                                                    className="rounded-circle me-2"
+                                                    style={{ width: '40px', height: '40px' }}
+                                                />
+                                                Profile
+                                            </Link>
+                                        </li>
+                                        <li className="nav-item">
+                                            <button
+                                                className="btn btn-link nav-link text-white"
+                                                style={{ textDecoration: 'none' }}
+                                                onClick={handleLogout}
+                                            >
+                                                Logout
+                                            </button>
+                                        </li>
+                                    </>
                                 ) : (
                                     <li className="nav-item d-flex">
                                         <Link to="/login" className="nav-link text-white">Login</Link>
