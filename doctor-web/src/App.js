@@ -1,25 +1,110 @@
-import logo from './logo.svg';
-import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+// import DoctorsPage from './pages/DoctorsPage';
+// import HospitalsPage from './pages/HospitalsPage';
+// import DoctorProfilePage from './pages/DoctorProfilePage';
+// import HospitalProfilePage from './pages/HospitalProfilePage';
+// import UserProfilePage from './pages/UserProfilePage';
+// import LoginPage from './pages/LoginPage';
+// import SignupPage from './pages/SignupPage';
+// import MainPage from './pages/MainPage';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const App = () => {
+    const [isAuthenticated, setIsAuthenticated] = useState(
+        localStorage.getItem('accessToken') !== null
+    );
+
+    useEffect(() => {
+        if (isAuthenticated !== (localStorage.getItem('accessToken') !== null)) {
+            window.location.reload();
+        }
+    }, [isAuthenticated]);
+
+    const handleLogout = () => {
+        localStorage.removeItem('accessToken');
+        setIsAuthenticated(false);
+    };
+
+    return (
+        <Router>
+            <div className="container-fluid px-4 py-4">
+                {/* Navbar */}
+                <nav className="navbar navbar-expand-lg navbar-light bg-success rounded mb-4">
+                    <div className="container-fluid">
+                        <Link to="/" className="navbar-brand text-white">Medify<h6>Doctors</h6></Link>
+                        <button
+                            className="navbar-toggler"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#navbarNav"
+                            aria-controls="navbarNav"
+                            aria-expanded="false"
+                            aria-label="Toggle navigation"
+                        >
+                            <span className="navbar-toggler-icon"></span>
+                        </button>
+                        <div className="collapse navbar-collapse" id="navbarNav">
+                            {/* Left Side - Doctors and Hospitals */}
+                            <ul className="navbar-nav me-auto">
+                                <li className="nav-item">
+                                    <Link to="/doctors" className="nav-link text-white">Doctors</Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link to="/hospitals" className="nav-link text-white">Hospitals</Link>
+                                </li>
+                            </ul>
+
+                            {/* Right Side - Authentication */}
+                            <ul className="navbar-nav ms-auto d-flex align-items-center">
+                                {isAuthenticated ? (
+                                    <>
+                                        <li className="nav-item">
+                                            <Link to="/user-profile" className="nav-link text-white d-flex align-items-center">
+                                                <img
+                                                    src="https://via.placeholder.com/40"
+                                                    alt="User Avatar"
+                                                    className="rounded-circle me-2"
+                                                    style={{ width: '40px', height: '40px' }}
+                                                />
+                                                Profile
+                                            </Link>
+                                        </li>
+                                        <li className="nav-item">
+                                            <button
+                                                className="btn btn-link nav-link text-white"
+                                                style={{ textDecoration: 'none' }}
+                                                onClick={handleLogout}
+                                            >
+                                                Logout
+                                            </button>
+                                        </li>
+                                    </>
+                                ) : (
+                                    <li className="nav-item d-flex">
+                                        <Link to="/login" className="nav-link text-white">Login</Link>
+                                        <Link to="/signup" className="nav-link text-white">Sign Up</Link>
+                                    </li>
+                                )}
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+
+                {/* Routing Pages */}
+                <Routes>
+                    {/* <Route path="/" element={<MainPage />} />
+                    <Route path="/doctors" element={<DoctorsPage />} />
+                    <Route path="/hospitals" element={<HospitalsPage />} />
+                    <Route path="/doctor/:id" element={<DoctorProfilePage />} />
+                    <Route path="/hospital/:id" element={<HospitalProfilePage />} />
+                    <Route path="/user-profile" element={<UserProfilePage />} />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/signup" element={<SignupPage />} /> */}
+                </Routes>
+            </div>
+        </Router>
+    );
+};
 
 export default App;
