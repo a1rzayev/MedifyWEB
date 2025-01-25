@@ -2,31 +2,42 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 const DoctorProfilePage = () => {
-    const { id } = useParams();
+    const { id } = useParams(); // Getting the doctor ID from the URL parameters
     const [doctor, setDoctor] = useState(null);
 
     useEffect(() => {
         const fetchDoctor = async () => {
-            const response = await fetch(`/api/Doctors/${id}`); // Замените на ваш API
-            const data = await response.json();
-            setDoctor(data);
+            try {
+                const response = await fetch(`http://localhost:5250/api/Doctor/${id}`); // Correct API URL
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                setDoctor(data);
+            } catch (error) {
+                console.error('Failed to fetch doctor data:', error);
+            }
         };
 
         fetchDoctor();
-    }, [id]);
+    }, [id]); // Only refetch when the `id` parameter changes
 
     if (!doctor) {
-        return <div>Загрузка...</div>;
+        return <div className="text-center">Loading...</div>; // Show loading message if doctor data is not yet loaded
     }
 
     return (
-        <div style={{ padding: '20px' }}>
-            <h1>Профиль доктора</h1>
-            <h2>{doctor.name} {doctor.surname}</h2>
-            <p><strong>Специальность:</strong> {doctor.speciality}</p>
-            <p><strong>Электронная почта:</strong> {doctor.mail}</p>
-            <p><strong>Телефон:</strong> {doctor.phone}</p>
-            <p><strong>Рейтинг:</strong> {doctor.rating}</p>
+        <div className="container mt-5">
+            <h1 className="text-center">Doctor Profile</h1>
+            <div className="card">
+                <div className="card-body">
+                    <h2 className="card-title">{doctor.name} {doctor.surname}</h2>
+                    <p><strong>Specialty:</strong> {doctor.speciality}</p>
+                    <p><strong>Email:</strong> {doctor.mail}</p>
+                    <p><strong>Phone:</strong> {doctor.phone}</p>
+                    <p><strong>Rating:</strong> {doctor.rating}</p>
+                </div>
+            </div>
         </div>
     );
 };

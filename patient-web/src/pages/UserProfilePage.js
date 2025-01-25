@@ -1,16 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const UserProfilePage = () => {
     const [user, setUser] = useState({
-        name: 'Имя',
-        surname: 'Фамилия',
-        birthdate: '1990-01-01',
-        gender: 'Мужчина',
-        phone: '+123456789',
-        email: 'example@mail.com',
-        dateJoined: '2023-01-01',
+        name: '',
+        surname: '',
+        birthdate: '',
+        gender: '',
+        phone: '',
+        email: '',
+        dateJoined: '',
         avatar: 'https://via.placeholder.com/150',
     });
+
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState('');
+    const navigate = useNavigate();
+
+    const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem('accessToken') !== null);
+
+    useEffect(() => {
+        if (!isAuthenticated) {
+            navigate('/login'); // Redirect to login page if not authenticated
+        }
+    }, [isAuthenticated, navigate]);
+
+    // Fetch user data
+    useEffect(() => {
+        if (isAuthenticated) {
+            const userId = 1; // Example: you can get the user ID dynamically if needed
+
+            axios.get(`http://localhost:5250/api/Patient/${userId}`)
+                .then(response => {
+                    setUser(response.data);
+                    setIsLoading(false);
+                })
+                .catch(err => {
+                    setError('Failed to load user data.');
+                    setIsLoading(false);
+                });
+        }
+    }, [isAuthenticated]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -26,86 +57,135 @@ const UserProfilePage = () => {
         }
     };
 
+    const handleLogout = (e) => {
+        localStorage.removeItem('accessToken');
+        setIsAuthenticated(false);
+        navigate('/login');
+        window.location.reload();
+    }
+
+    const handleSave = () => {
+        console.log('User data saved:', user);
+    };
+
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+
+    // if (error) {
+    //     return <div>{error}</div>;
+    // }
+
     return (
-        <div style={{ padding: '20px' }}>
-            <h1>Профиль пользователя</h1>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+        <div className="container py-4">
+            <h1 className="mb-4">User Profile</h1>
+
+            {/* Avatar and File Upload */}
+            <div className="d-flex align-items-center mb-4">
                 <img
                     src={user.avatar}
                     alt="User Avatar"
-                    style={{ width: '150px', height: '150px', borderRadius: '50%', marginRight: '20px' }}
+                    className="rounded-circle me-3"
+                    style={{ width: '150px', height: '150px' }}
                 />
-                <input type="file" onChange={handleAvatarChange} />
+                <input type="file" className="form-control" onChange={handleAvatarChange} />
             </div>
 
-            <form style={{ maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <label>
-                    Имя:
+            {/* Form */}
+            <form style={{ maxWidth: '600px', margin: '0 auto' }}>
+                <div className="mb-3">
+                    <label className="form-label">First Name</label>
                     <input
                         type="text"
                         name="name"
                         value={user.name}
                         onChange={handleChange}
+                        className="form-control"
                     />
-                </label>
-                <label>
-                    Фамилия:
+                </div>
+
+                <div className="mb-3">
+                    <label className="form-label">Last Name</label>
                     <input
                         type="text"
                         name="surname"
                         value={user.surname}
                         onChange={handleChange}
+                        className="form-control"
                     />
-                </label>
-                <label>
-                    Дата рождения:
+                </div>
+
+                <div className="mb-3">
+                    <label className="form-label">Date of Birth</label>
                     <input
                         type="date"
                         name="birthdate"
                         value={user.birthdate}
                         onChange={handleChange}
+                        className="form-control"
                     />
-                </label>
-                <label>
-                    Пол:
+                </div>
+
+                <div className="mb-3">
+                    <label className="form-label">Gender</label>
                     <select
                         name="gender"
                         value={user.gender}
                         onChange={handleChange}
+                        className="form-select"
                     >
-                        <option value="Мужчина">Мужчина</option>
-                        <option value="Женщина">Женщина</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
                     </select>
-                </label>
-                <label>
-                    Телефон:
+                </div>
+
+                <div className="mb-3">
+                    <label className="form-label">Phone Number</label>
                     <input
                         type="text"
                         name="phone"
                         value={user.phone}
                         onChange={handleChange}
+                        className="form-control"
                     />
-                </label>
-                <label>
-                    Электронная почта:
+                </div>
+
+                <div className="mb-3">
+                    <label className="form-label">Email</label>
                     <input
                         type="email"
                         name="email"
                         value={user.email}
                         onChange={handleChange}
+                        className="form-control"
                     />
-                </label>
-                <label>
-                    Дата регистрации:
+                </div>
+
+                <div className="mb-3">
+                    <label className="form-label">Date Joined</label>
                     <input
                         type="date"
                         name="dateJoined"
                         value={user.dateJoined}
                         readOnly
+                        className="form-control"
                     />
-                </label>
-                <button type="button" style={{ padding: '10px', marginTop: '10px', background: 'blue', color: 'white' }}>
-                    Сохранить изменения
+                </div>
+                <button
+                
+                    type="button"
+                    className="btn btn-primary mt-3"
+                    onClick={handleLogout}
+                >
+                    Logout
+                </button>
+
+                <button
+                    type="button"
+                    onClick={handleSave}
+                    className="btn btn-primary mt-3"
+                >
+                    Save Changes
                 </button>
             </form>
         </div>
