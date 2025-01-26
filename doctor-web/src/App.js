@@ -1,14 +1,14 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-// import DoctorsPage from './pages/DoctorsPage';
-// import HospitalsPage from './pages/HospitalsPage';
-// import DoctorProfilePage from './pages/DoctorProfilePage';
-// import HospitalProfilePage from './pages/HospitalProfilePage';
-// import UserProfilePage from './pages/UserProfilePage';
-// import LoginPage from './pages/LoginPage';
-// import SignupPage from './pages/SignupPage';
-// import MainPage from './pages/MainPage';
+import DoctorsPage from './pages/DoctorsPage';
+import HospitalsPage from './pages/HospitalsPage';
+import DoctorProfilePage from './pages/DoctorProfilePage';
+import HospitalProfilePage from './pages/HospitalProfilePage';
+import UserProfilePage from './pages/UserProfilePage';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
+import MainPage from './pages/MainPage';
 
 const App = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(
@@ -93,14 +93,14 @@ const App = () => {
 
                 {/* Routing Pages */}
                 <Routes>
-                    {/* <Route path="/" element={<MainPage />} />
+                    <Route path="/" element={<MainPage />} />
                     <Route path="/doctors" element={<DoctorsPage />} />
                     <Route path="/hospitals" element={<HospitalsPage />} />
                     <Route path="/doctor/:id" element={<DoctorProfilePage />} />
                     <Route path="/hospital/:id" element={<HospitalProfilePage />} />
                     <Route path="/user-profile" element={<UserProfilePage />} />
                     <Route path="/login" element={<LoginPage />} />
-                    <Route path="/signup" element={<SignupPage />} /> */}
+                    <Route path="/signup" element={<SignupPage />} /> 
                 </Routes>
             </div>
         </Router>
