@@ -36,6 +36,9 @@ const DoctorProfilePage = () => {
                     <p><strong>Email:</strong> {doctor.mail}</p>
                     <p><strong>Phone:</strong> {doctor.phone}</p>
                     <p><strong>Rating:</strong> {doctor.rating}</p>
+                    {doctor.isValidated && (
+                        <button className="btn btn-primary mt-3">Request Rendezvous</button>
+                    )}
                 </div>
             </div>
         </div>
