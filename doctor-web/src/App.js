@@ -9,11 +9,26 @@ import UserProfilePage from './pages/UserProfilePage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import MainPage from './pages/MainPage';
+import { jwtDecode } from 'jwt-decode';
 
 const App = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(
         localStorage.getItem('accessToken') !== null
     );
+    const [userId, setUserId] = useState(null);
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            const token = localStorage.getItem('accessToken');
+            console.log(`token: ${token}`);
+            if (token) {
+                const decodedToken = jwtDecode(token);
+                const extractedUserId = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+                console.log(`userId: ${extractedUserId}`);
+                setUserId(extractedUserId);
+            }
+        }
+    }, [isAuthenticated]);
 
     useEffect(() => {
         if (isAuthenticated !== (localStorage.getItem('accessToken') !== null)) {
@@ -60,7 +75,7 @@ const App = () => {
                                 {isAuthenticated ? (
                                     <>
                                         <li className="nav-item">
-                                            <Link to="/user-profile" className="nav-link text-white d-flex align-items-center">
+                                            <Link to={`/profile/${userId}`} className="nav-link text-white d-flex align-items-center">
                                                 <img
                                                     src="https://via.placeholder.com/40"
                                                     alt="User Avatar"
@@ -98,9 +113,9 @@ const App = () => {
                     <Route path="/hospitals" element={<HospitalsPage />} />
                     <Route path="/doctor/:id" element={<DoctorProfilePage />} />
                     <Route path="/hospital/:id" element={<HospitalProfilePage />} />
-                    <Route path="/user-profile" element={<UserProfilePage />} />
+                    <Route path="/profile/:id" element={<DoctorProfilePage />} />
                     <Route path="/login" element={<LoginPage />} />
-                    <Route path="/signup" element={<SignupPage />} /> 
+                    <Route path="/signup" element={<SignupPage />} />
                 </Routes>
             </div>
         </Router>
