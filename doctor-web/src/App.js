@@ -5,7 +5,7 @@ import DoctorsPage from './pages/DoctorsPage';
 import HospitalsPage from './pages/HospitalsPage';
 import DoctorProfilePage from './pages/DoctorProfilePage';
 import HospitalProfilePage from './pages/HospitalProfilePage';
-import UserProfilePage from './pages/UserProfilePage';
+import ValidatePage from './pages/ValidatePage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import MainPage from './pages/MainPage';
@@ -86,6 +86,11 @@ const App = () => {
                                             </Link>
                                         </li>
                                         <li className="nav-item">
+                                            <Link to={`/validate/${userId}`} className="nav-link text-white d-flex align-items-center">
+                                                Validate
+                                            </Link>
+                                        </li>
+                                        <li className="nav-item">
                                             <button
                                                 className="btn btn-link nav-link text-white"
                                                 style={{ textDecoration: 'none' }}
@@ -114,6 +119,7 @@ const App = () => {
                     <Route path="/doctor/:id" element={<DoctorProfilePage />} />
                     <Route path="/hospital/:id" element={<HospitalProfilePage />} />
                     <Route path="/profile/:id" element={<DoctorProfilePage />} />
+                    <Route path="/validate/:id" element={<ValidatePage />} />
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/signup" element={<SignupPage />} />
                 </Routes>

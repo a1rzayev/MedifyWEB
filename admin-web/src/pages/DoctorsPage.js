@@ -1,121 +1,91 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const Doctors = () => {
-  const [doctors, setDoctors] = useState([]);
-  const [form, setForm] = useState({ id: "", name: "", specialty: "" });
-  const [isEditing, setIsEditing] = useState(false);
-  const apiUrl = "https://your-api-url/api/Doctors"; // Replace with your actual API URL
+const DoctorsPage = () => {
+    const [doctors, setDoctors] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedSpecialty, setSelectedSpecialty] = useState('');
+    const navigate = useNavigate();
 
-  // Fetch all doctors
-  useEffect(() => {
-    fetchDoctors();
-  }, []);
+    useEffect(() => {
+        const fetchDoctors = async () => {
+            const response = await fetch('http://localhost:5250/api/Doctor'); // Replace with your API
+            const data = await response.json();
+            setDoctors(data);
+        };
 
-  const fetchDoctors = async () => {
-    try {
-      const response = await fetch(apiUrl);
-      const data = await response.json();
-      setDoctors(data);
-    } catch (error) {
-      console.error("Error fetching doctors:", error);
-    }
-  };
+        fetchDoctors();
+    }, []);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
-  };
+    const filteredDoctors = doctors.filter(doctor => {
+        const matchesName = doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                            doctor.surname.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSpecialty = selectedSpecialty ? doctor.speciality === selectedSpecialty : true;
+        return matchesName && matchesSpecialty;
+    });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (isEditing) {
-      await updateDoctor();
-    } else {
-      await addDoctor();
-    }
-    fetchDoctors();
-    resetForm();
-  };
+    const specialties = [
+        'Cardiologist', 'Neurologist', 'Endocrinologist', 'Pediatrician', 'Surgeon', 
+        'Gynecologist', 'Oncologist', 'Dermatologist', 'Orthopedic', 'Psychiatrist', 
+        'Rheumatologist', 'InfectiousDiseaseSpecialist', 'Urologist', 'Pulmonologist', 
+        'Gastroenterologist', 'Otorhinolaryngologist', 'Radiologist', 'Anesthesiologist', 
+        'Pathologist', 'Allergist', 'Hematologist', 'Geriatrician'
+    ];
 
-  const addDoctor = async () => {
-    try {
-      await fetch(apiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-    } catch (error) {
-      console.error("Error adding doctor:", error);
-    }
-  };
+    return (
+        <div style={{ padding: '20px' }}>
+            <h1>Doctors List</h1>
 
-  const updateDoctor = async () => {
-    try {
-      await fetch(`${apiUrl}/${form.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-    } catch (error) {
-      console.error("Error updating doctor:", error);
-    }
-  };
+            {/* Search bar */}
+            <input
+                type="text"
+                placeholder="Search by name or surname..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{ padding: '10px', marginBottom: '20px', width: '100%' }}
+            />
 
-  const deleteDoctor = async (id) => {
-    try {
-      await fetch(`${apiUrl}/${id}`, {
-        method: "DELETE",
-      });
-      fetchDoctors();
-    } catch (error) {
-      console.error("Error deleting doctor:", error);
-    }
-  };
+            {/* Specialty filter */}
+            <select
+                value={selectedSpecialty}
+                onChange={(e) => setSelectedSpecialty(e.target.value)}
+                style={{ padding: '10px', marginBottom: '20px', width: '100%' }}
+            >
+                <option value="">Select Specialty</option>
+                {specialties.map((specialty) => (
+                    <option key={specialty} value={specialty}>
+                        {specialty}
+                    </option>
+                ))}
+            </select>
 
-  const editDoctor = (doctor) => {
-    setForm(doctor);
-    setIsEditing(true);
-  };
-
-  const resetForm = () => {
-    setForm({ id: "", name: "", specialty: "" });
-    setIsEditing(false);
-  };
-
-  return (
-    <div>
-      <h1>Doctors</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="name"
-          value={form.name}
-          placeholder="Name"
-          onChange={handleInputChange}
-          required
-        />
-        <input
-          type="text"
-          name="specialty"
-          value={form.specialty}
-          placeholder="Specialty"
-          onChange={handleInputChange}
-          required
-        />
-        <button type="submit">{isEditing ? "Update" : "Add"} Doctor</button>
-        {isEditing && <button onClick={resetForm}>Cancel</button>}
-      </form>
-      <ul>
-        {doctors.map((doctor) => (
-          <li key={doctor.id}>
-            {doctor.name} - {doctor.specialty}
-            <button onClick={() => editDoctor(doctor)}>Edit</button>
-            <button onClick={() => deleteDoctor(doctor.id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+            {/* Doctors cards */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
+                {filteredDoctors.map(doctor => (
+                    <div
+                        key={doctor.id}
+                        onClick={() => navigate(`/doctor/${doctor.id}`)}
+                        style={{
+                            border: '1px solid #ccc',
+                            borderRadius: '8px',
+                            padding: '10px',
+                            cursor: 'pointer',
+                            width: '200px',
+                            textAlign: 'center'
+                        }}
+                    >
+                        <img
+                            src={doctor.photo || 'https://via.placeholder.com/150'}
+                            alt={`${doctor.name} ${doctor.surname}`}
+                            style={{ width: '100%', borderRadius: '8px', marginBottom: '10px' }}
+                        />
+                        <h3>{doctor.name} {doctor.surname}</h3>
+                        <p><strong>Specialty:</strong> {doctor.speciality}</p>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
 };
 
-export default Doctors;
+export default DoctorsPage;
