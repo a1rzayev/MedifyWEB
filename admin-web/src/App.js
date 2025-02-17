@@ -2,6 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import DoctorsPage from './pages/DoctorsPage';
+import PatientsPage from './pages/PatientsPage';
 import HospitalsPage from './pages/HospitalsPage';
 import DoctorProfilePage from './pages/DoctorProfilePage';
 import HospitalProfilePage from './pages/HospitalProfilePage';
@@ -45,6 +46,12 @@ const Navbar = ({ isAuthenticated, userId, handleLogout }) => {
                         <li className="nav-item">
                             <Link to="/doctors" className={`nav-link text-white fs-5 fw-semibold rounded-pill p-3 ${isActive('/doctors')}`}>
                                 👨‍⚕️ Həkimlər
+                            </Link>
+                        </li>
+                        {/* Patients Button */}
+                        <li className="nav-item">
+                            <Link to="/patients" className={`nav-link text-white fs-5 fw-semibold rounded-pill p-3 ${isActive('/patients')}`}>
+                                😷 Pasientlər
                             </Link>
                         </li>
                         {/* Hospitals Button */}
@@ -138,6 +145,7 @@ const App = () => {
                     <Routes>
                         <Route path="/" element={<MainPage />} />
                         <Route path="/doctors" element={<DoctorsPage />} />
+                        <Route path="/patients" element={<PatientsPage />} />
                         <Route path="/hospitals" element={<HospitalsPage />} />
                         <Route path="/doctor/:id" element={<DoctorProfilePage />} />
                         <Route path="/hospital/:id" element={<HospitalProfilePage />} />
