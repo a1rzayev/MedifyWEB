@@ -64,24 +64,24 @@ const DoctorProfilePage = () => {
         setFormData(prevState => ({ ...prevState, [name]: value }));
     };
 
-    const handleWorkHoursChange = (day, field, value) => {
-        // Ensure the value is in the correct time format (HH:mm), padding if necessary
-        const formattedValue = field === 'start' || field === 'end' ? value.padStart(5, '0') : value;
-        // Check if enabled value is properly set to a boolean
-        const enabled = field === 'enabled' ? (value === 'true') : undefined;
-    
-        setFormData(prevState => ({
-            ...prevState,
-            workDaysHours: {
-                ...prevState.workDaysHours,
-                [day]: {
-                    ...prevState.workDaysHours?.[day],
-                    [field]: formattedValue || (enabled !== undefined ? enabled : prevState.workDaysHours?.[day]?.[field])
-                }
-            }
-        }));
-    };
-    
+    // const handleWorkHoursChange = (day, field, value) => {
+    //     // Ensure the value is in the correct time format (HH:mm), padding if necessary
+    //     const formattedValue = field === 'start' || field === 'end' ? value.padStart(5, '0') : value;
+    //     // Check if enabled value is properly set to a boolean
+    //     const enabled = field === 'enabled' ? (value === 'true') : undefined;
+
+    //     setFormData(prevState => ({
+    //         ...prevState,
+    //         workDaysHours: {
+    //             ...prevState.workDaysHours,
+    //             [day]: {
+    //                 ...prevState.workDaysHours?.[day],
+    //                 [field]: formattedValue || (enabled !== undefined ? enabled : prevState.workDaysHours?.[day]?.[field])
+    //             }
+    //         }
+    //     }));
+    // };
+
 
 
 
@@ -116,9 +116,11 @@ const DoctorProfilePage = () => {
 
         // If all validations pass, proceed with form submission
         try {
+            console.log(id);
+            console.log(doctor.Id);
+            formData.id = id;
             const requestData = {
-                ...formData,
-                workDaysHours: workDaysHours
+                ...formData
             };
 
             const response = await axios.put(`http://localhost:5250/api/Doctor/${id}`, requestData, {
@@ -129,13 +131,11 @@ const DoctorProfilePage = () => {
             setDoctor(formData);
             setIsEditing(false);
             console.log(formData);
-            console.log(workDaysHours);
         } catch (error) {
             setError('Failed to update profile');
             console.error('Error updating doctor profile:', error);
 
             console.log(formData);
-            console.log(workDaysHours);
         }
     };
 
@@ -195,7 +195,7 @@ const DoctorProfilePage = () => {
                                     ))}
                                 </select>
                             </div>
-                            <h4>Working Days & Hours</h4>
+                            {/* <h4>Working Days & Hours</h4>
                             {daysOfWeek.map(day => (
                                 <div className="mb-3">
                                     <input
@@ -219,7 +219,7 @@ const DoctorProfilePage = () => {
                                                 value={formData.workDaysHours?.[day]?.end || ''}
                                                 onChange={(e) => handleWorkHoursChange(day, 'end', e.target.value)}
                                             />
-                                            {/* If you're using a checkbox or something else to toggle 'enabled' */}
+                                            {/* If you're using a checkbox or something else to toggle 'enabled' 
                                             <input
                                                 type="checkbox"
                                                 checked={formData.workDaysHours?.[day]?.enabled || false}
@@ -230,7 +230,7 @@ const DoctorProfilePage = () => {
                                     )}
                                 </div>
 
-                            ))}
+                            ))} */}
                             <button type="submit" className="btn btn-success">Save Changes</button>
                             <button type="button" className="btn btn-secondary ms-2" onClick={() => setIsEditing(false)}>Cancel</button>
                         </form>
@@ -253,3 +253,128 @@ const DoctorProfilePage = () => {
 };
 
 export default DoctorProfilePage;
+
+
+// import React, { useState, useEffect } from "react";
+// import axios from "axios";
+// import { Form, Button, Container } from "react-bootstrap";
+// import { jwtDecode } from "jwt-decode";
+// const [isOwner, setIsOwner] = useState(false);
+
+// const getDoctorIdFromToken = () => {
+//     const token = localStorage.getItem('accessToken');
+//     if (token) {
+//         const decodedToken = jwtDecode(token);
+//         const userId = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+//         setIsOwner(userId === id);
+//     }
+
+// };
+
+// const EditDoctor = () => {
+//     const { id } = useParams();
+//     const [doctorId,  // Get doctorId from JWT
+//     const [doctor, setDoctor] = useState({
+//         name: "",
+//         surname: "",
+//         birthdate: "",
+//         gender: "",
+//         phone: "",
+//         email: "",
+//         password: "",
+//         dateJoined: "",
+//         speciality: "",
+//     });
+
+//     useEffect(() => {
+//         if (!doctorId) {
+//             console.error("No doctorId found in token.");
+//             return;
+//         }
+
+//         axios.get(`http://localhost:5250/api/Doctor/${doctorId}`)
+//             .then(response => setDoctor(response.data))
+//             .catch(error => console.error("Error fetching doctor:", error));
+//     }, [doctorId]);
+
+//     const handleChange = (e) => {
+//         setDoctor({ ...doctor, [e.target.name]: e.target.value });
+//     };
+
+//     const handleSubmit = async (e) => {
+//         e.preventDefault();
+//         if (!doctorId) return;
+
+//         try {
+//             await axios.put(`http://localhost:5250/api/Doctor/${doctorId}`, doctor);
+//             alert("Doctor updated successfully!");
+//         } catch (error) {
+//             console.error("Error updating doctor:", error);
+//         }
+//     };
+
+//     return (
+//         <Container>
+//             <h2>Edit Doctor</h2>
+//             <Form onSubmit={handleSubmit}>
+//                 <Form.Group>
+//                     <Form.Label>Name</Form.Label>
+//                     <Form.Control type="text" name="name" value={doctor.name} onChange={handleChange} required />
+//                 </Form.Group>
+
+//                 <Form.Group>
+//                     <Form.Label>Surname</Form.Label>
+//                     <Form.Control type="text" name="surname" value={doctor.surname} onChange={handleChange} required />
+//                 </Form.Group>
+
+//                 <Form.Group>
+//                     <Form.Label>Birthdate</Form.Label>
+//                     <Form.Control type="date" name="birthdate" value={doctor.birthdate} onChange={handleChange} />
+//                 </Form.Group>
+
+//                 <Form.Group>
+//                     <Form.Label>Gender</Form.Label>
+//                     <Form.Control as="select" name="gender" value={doctor.gender} onChange={handleChange}>
+//                         <option value="">Select</option>
+//                         <option value="0">Male</option>
+//                         <option value="1">Female</option>
+//                     </Form.Control>
+//                 </Form.Group>
+
+//                 <Form.Group>
+//                     <Form.Label>Phone</Form.Label>
+//                     <Form.Control type="text" name="phone" value={doctor.phone} onChange={handleChange} />
+//                 </Form.Group>
+
+//                 <Form.Group>
+//                     <Form.Label>Email</Form.Label>
+//                     <Form.Control type="email" name="email" value={doctor.email} onChange={handleChange} required />
+//                 </Form.Group>
+
+//                 <Form.Group>
+//                     <Form.Label>Password</Form.Label>
+//                     <Form.Control type="password" name="password" value={doctor.password} onChange={handleChange} />
+//                 </Form.Group>
+
+//                 <Form.Group>
+//                     <Form.Label>Date Joined</Form.Label>
+//                     <Form.Control type="date" name="dateJoined" value={doctor.dateJoined} onChange={handleChange} />
+//                 </Form.Group>
+
+//                 <Form.Group>
+//                     <Form.Label>Speciality</Form.Label>
+//                     <Form.Control as="select" name="speciality" value={doctor.speciality} onChange={handleChange}>
+//                         <option value="">Select</option>
+//                         <option value="0">Cardiology</option>
+//                         <option value="1">Neurology</option>
+//                         <option value="2">Oncology</option>
+//                     </Form.Control>
+//                 </Form.Group>
+
+//                 <Button variant="primary" type="submit">Save Changes</Button>
+//             </Form>
+//         </Container>
+//     );
+// };
+
+// export default EditDoctor;
