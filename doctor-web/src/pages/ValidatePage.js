@@ -20,13 +20,13 @@ const ValidatePage = () => {
         console.log(extractedUserId);
 
         // Fetch hasPendingRequest status
-        axios.get(`http://localhost:5250/api/Doctor/HasPendingRequest/${extractedUserId}`)
-          .then(response => {
-            setHasPendingRequest(response.data);
-          })
-          .catch(error => {
-            console.error('Error fetching pending request status:', error);
-          });
+        // axios.get(`http://localhost:5250/api/Doctor/HasPendingRequest/${extractedUserId}`)
+        //   .then(response => {
+        //     setHasPendingRequest(response.data);
+        //   })
+        //   .catch(error => {
+        //     console.error('Error fetching pending request status:', error);
+        //   });
       } catch (error) {
         console.error('Error decoding token:', error);
       }
