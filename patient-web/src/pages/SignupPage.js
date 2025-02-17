@@ -67,11 +67,11 @@ const SignupPage = () => {
     return (
         <div className="container py-4">
             <div className="card shadow-lg p-4" style={{ maxWidth: "400px", margin: "0 auto" }}>
-                <h2 className="mb-4 text-center">Sign Up</h2>
+                <h2 className="mb-4 text-center">Qeydiyyatdan keç</h2>
                 {error && <div className="alert alert-danger">{error}</div>}
                 <form onSubmit={handleSubmit}>
                     <div className="mb-3">
-                        <label className="form-label">Name</label>
+                        <label className="form-label">Ad</label>
                         <input
                             type="text"
                             name="name"
@@ -83,7 +83,7 @@ const SignupPage = () => {
                     </div>
 
                     <div className="mb-3">
-                        <label className="form-label">Surname</label>
+                        <label className="form-label">Soyad</label>
                         <input
                             type="text"
                             name="surname"
@@ -107,7 +107,7 @@ const SignupPage = () => {
                     </div>
 
                     <div className="mb-3">
-                        <label className="form-label">Password</label>
+                        <label className="form-label">Şifrə</label>
                         <div className="input-group">
                             <input
                                 type={showPassword ? "text" : "password"}
@@ -122,38 +122,38 @@ const SignupPage = () => {
                                 onClick={togglePasswordVisibility}
                                 className="btn btn-outline-secondary"
                             >
-                                {showPassword ? "Hide" : "Show"}
+                            {showPassword ? "🔓" : "🔒"}
                             </button>
                         </div>
                         <div className="mt-2">
-                            <p>Password must meet the following requirements:</p>
+                            <p>Şifrə qeyd olunan tələblərə uymalıdır:</p>
                             <ul>
                                 <li style={{ color: validation.minLength ? "green" : "red" }}>
-                                    At least 8 characters
+                                    Ən azı 8 simvol
                                 </li>
                                 <li style={{ color: validation.uppercase ? "green" : "red" }}>
-                                    At least 1 uppercase letter
+                                    Ən azı 1 böyük hərf
                                 </li>
                                 <li style={{ color: validation.specialChar ? "green" : "red" }}>
-                                    At least 1 special character (!, @, #, etc.)
+                                    Ən azı 1 xüsusi simvol (!, @, #, etc.)
                                 </li>
                                 <li style={{ color: validation.number ? "green" : "red" }}>
-                                    At least 1 number
+                                    Ən azı 1 rəqəm
                                 </li>
                             </ul>
                         </div>
                     </div>
 
-                    <button type="submit" className="btn btn-primary w-100">Sign Up</button>
+                    <button type="submit" className="btn btn-primary w-100">Qeydiyyatdan keç</button>
                 </form>
                 <p className="mt-3 text-center">
-                    Already have an account?{" "}
+                    Artıq hesabınız var?{" "}
                     <button
                         type="button"
                         className="btn btn-link"
                         onClick={handleLoginRedirect}
                     >
-                        Login
+                        Daxil ol
                     </button>
                 </p>
             </div>
