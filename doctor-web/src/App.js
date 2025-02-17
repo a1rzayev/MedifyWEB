@@ -10,29 +10,33 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import MainPage from './pages/MainPage';
 import { jwtDecode } from 'jwt-decode';
+import axios from 'axios';
 
 const App = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(
         localStorage.getItem('accessToken') !== null
     );
     const [userId, setUserId] = useState(null);
+    const [isValidated, setIsValidated] = useState(true); // Default as validated to prevent unwanted button flash
 
     useEffect(() => {
         if (isAuthenticated) {
             const token = localStorage.getItem('accessToken');
-            console.log(`token: ${token}`);
             if (token) {
                 const decodedToken = jwtDecode(token);
                 const extractedUserId = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
-                console.log(`userId: ${extractedUserId}`);
                 setUserId(extractedUserId);
-            }
-        }
-    }, [isAuthenticated]);
+                console.log(extractedUserId);
 
-    useEffect(() => {
-        if (isAuthenticated !== (localStorage.getItem('accessToken') !== null)) {
-            window.location.reload();
+                // Fetch validation status
+                axios.get(`http://localhost:5250/api/Doctor/HasPendingRequest/${extractedUserId}`)
+                    .then(response => {
+                        setIsValidated(response.data);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching pending request status:', error);
+                    });
+            }
         }
     }, [isAuthenticated]);
 
@@ -85,11 +89,13 @@ const App = () => {
                                                 Profile
                                             </Link>
                                         </li>
-                                        <li className="nav-item">
-                                            <Link to={`/validate/${userId}`} className="nav-link text-white d-flex align-items-center">
-                                                Validate
-                                            </Link>
-                                        </li>
+                                        {isValidated && (
+                                            <li className="nav-item">
+                                                <Link to={`/validate/${userId}`} className="nav-link text-white d-flex align-items-center">
+                                                    Validate
+                                                </Link>
+                                            </li>
+                                        )}
                                         <li className="nav-item">
                                             <button
                                                 className="btn btn-link nav-link text-white"

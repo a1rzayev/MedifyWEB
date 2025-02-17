@@ -1,55 +1,38 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode"; // Install with: npm install jwt-decode
 
 const VerifyRequestsPage = () => {
+    const [message, setMessage] = useState('');
     const [verifyRequests, setVerifyRequests] = useState([]);
-    // const [isAdmin, setIsAdmin] = useState(false);
-    const [id, setId] = useState(null); // State for storing decoded ID
-
-    //useEffect(() => {
-        // Get the access token from localStorage
-        //const accessToken = localStorage.getItem('accessToken');
-
-
-        //if (accessToken) {
-        //    try {
-                // Decode the token
-                //const decodedToken = jwtDecode(accessToken);
-                //const extractedUserId = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
-                //console.log(`userId: ${extractedUserId}`);
-                //setId(extractedUserId);
-
-                //console.log(extractedUserId)
-        //    } catch (error) {
-        //        console.error('Error decoding token:', error);
-         //   }
-        //} else {
-         //   console.log('No access token found');
-        //}
-    //}, []);
 
     useEffect(() => {
-        // if (isAdmin) return; // Fetch data only if admin
+        const fetchDiplomas = async () => {
+            try {
+                const response = await fetch("http://localhost:5250/api/Doctor/Diplomas");
+                if (!response.ok) {
+                    throw new Error("Failed to fetch diplomas");
+                }
+                const data = await response.json();
+                console.log(data);
+                setVerifyRequests(data);
+            } catch (error) {
+                console.error("Error fetching diplomas:", error);
+            }
+        };
 
-        axios.get("http://localhost:5250/api/Doctor/Diplomas", {
-            //headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
-        })
-            .then(response => setVerifyRequests(response.data))
-            .catch(error => console.error("Error fetching diplomas:", error));
-    });
+        fetchDiplomas();
+    }, []);
 
     const handleDownload = async (doctorId) => {
         try {
-            const response = await axios.get(
-                `http://localhost:5250/api/Doctor/DownloadDiploma/${doctorId}`,
-                {
-                    headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
-                    responseType: "blob",
-                }
-            );
+            const response = await fetch(`http://localhost:5250/api/Doctor/DownloadDiploma/${doctorId}`);
+            if (!response.ok) {
+                throw new Error("Failed to download diploma");
+            }
 
-            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
             const link = document.createElement("a");
             link.href = url;
             link.setAttribute("download", `${doctorId}.pdf`);
@@ -61,10 +44,43 @@ const VerifyRequestsPage = () => {
         }
     };
 
+    const handleApprove = async (doctorId) => {
+        try {
+            const response = await fetch(
+              `http://localhost:5250/api/Doctor/ApproveDegree/${doctorId}`,
+              { method: "POST" }
+            );
+      
+            if (!response.ok) {
+              throw new Error("Failed to approve degree");
+            }
+      
+            alert("Degree approved successfully!");
+          } catch (error) {
+            console.error(error);
+            alert("An error occurred");
+          }
 
-    // if (isAdmin) {
-    // return <p className="text-red-500 text-lg font-bold">Access Denied: Admins Only</p>;
-    // }
+    };
+
+    const handleDeny = async (doctorId) => {
+        try {
+            const response = await fetch(`http://localhost:5250/api/Doctor/DenyDegree/${doctorId}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to deny diploma");
+            }
+
+            setVerifyRequests((prev) => prev.filter((req) => req.senderId !== doctorId));
+        } catch (error) {
+            console.error("Error denying diploma:", error);
+        }
+    };
 
     return (
         <div className="p-4">
@@ -79,16 +95,32 @@ const VerifyRequestsPage = () => {
                 </thead>
                 <tbody>
                     {verifyRequests.length > 0 ? (
-                        verifyRequests.map((verifyReuqest, index) => (
+                        verifyRequests.map((verifyRequest, index) => (
                             <tr key={index} className="border">
-                                <td className="border px-4 py-2">{verifyReuqest.SenderId}</td>
-                                <td className="border px-4 py-2">{verifyReuqest.State}</td>
                                 <td className="border px-4 py-2">
+                                    <Link to={`/profile/${verifyRequest.senderId}`} className="text-blue-500 hover:underline">
+                                        {verifyRequest.senderId}
+                                    </Link>
+                                </td>
+                                <td className="border px-4 py-2">{verifyRequest.senderId}.pdf</td>
+                                <td className="border px-4 py-2 flex space-x-2">
                                     <button
-                                        onClick={() => handleDownload(verifyReuqest.DoctorId)}
+                                        onClick={() => handleDownload(verifyRequest.senderId)}
                                         className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
                                     >
                                         Download
+                                    </button>
+                                    <button
+                                        onClick={() => handleApprove(verifyRequest.senderId)}
+                                        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700"
+                                    >
+                                        Approve
+                                    </button>
+                                    <button
+                                        onClick={() => handleDeny(verifyRequest.senderId)}
+                                        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700"
+                                    >
+                                        Deny
                                     </button>
                                 </td>
                             </tr>

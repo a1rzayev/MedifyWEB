@@ -17,6 +17,7 @@ const ValidatePage = () => {
         const decodedToken = jwtDecode(accessToken);
         const extractedUserId = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
         setId(extractedUserId);
+        console.log(extractedUserId);
 
         // Fetch hasPendingRequest status
         axios.get(`http://localhost:5250/api/Doctor/HasPendingRequest/${extractedUserId}`)
