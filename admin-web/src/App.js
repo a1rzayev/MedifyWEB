@@ -8,6 +8,7 @@ import HospitalProfilePage from './pages/HospitalProfilePage';
 import MainPage from './pages/MainPage';
 import { jwtDecode } from 'jwt-decode';
 import VerifyRequestsPage from './pages/VerifyRequestsPage';
+import LoginPage from './pages/LoginPage';
 
 const Navbar = ({ isAuthenticated, userId, handleLogout }) => {
     const location = useLocation();
@@ -19,7 +20,7 @@ const Navbar = ({ isAuthenticated, userId, handleLogout }) => {
         <nav className="navbar navbar-expand-lg navbar-dark bg-danger rounded shadow-lg p-3">
             <div className="container-fluid">
                 <Link to="/" className="navbar-brand text-white fw-bold fs-4">
-                    Medify <span className="fs-6">Adminlər</span>
+                    Medify <span className="fs-6">Admin</span>
                 </Link>
                 <button
                     className="navbar-toggler"
@@ -142,6 +143,7 @@ const App = () => {
                         <Route path="/hospital/:id" element={<HospitalProfilePage />} />
                         <Route path="/profile/:id" element={<DoctorProfilePage />} />
                         <Route path="/verifyrequests/" element={<VerifyRequestsPage />} />
+                        <Route path="/login" element={<LoginPage />} />
                     </Routes>
                 </div>
             </div>
