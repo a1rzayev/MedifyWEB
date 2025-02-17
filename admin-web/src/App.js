@@ -1,21 +1,129 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import DoctorsPage from './pages/DoctorsPage';
-import Navbar from './components/Navbar';
+import HospitalsPage from './pages/HospitalsPage';
+import DoctorProfilePage from './pages/DoctorProfilePage';
+import HospitalProfilePage from './pages/HospitalProfilePage';
+import MainPage from './pages/MainPage';
+import { jwtDecode } from 'jwt-decode';
+import VerifyRequestsPage from './pages/VerifyRequestsPage';
 
-function App() {
-  return (
-    <Router>
-      <div className="App">
-        <Navbar />
-        <h1>Medical Admin Panel</h1>
-        <Routes>
-          <Route path="/" element={<h2>Welcome to Admin Panel</h2>} />
-          <Route path="/doctors" element={<DoctorsPage />} />
-        </Routes>
-      </div>
-    </Router>
-  );
-}
+const App = () => {
+    const [isAuthenticated, setIsAuthenticated] = useState(
+        localStorage.getItem('accessToken') !== null
+    );
+    const [userId, setUserId] = useState(null);
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            const token = localStorage.getItem('accessToken');
+            console.log(`token: ${token}`);
+            if (token) {
+                const decodedToken = jwtDecode(token);
+                const extractedUserId = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+                console.log(`userId: ${extractedUserId}`);
+                setUserId(extractedUserId);
+            }
+        }
+    }, [isAuthenticated]);
+
+    useEffect(() => {
+        if (isAuthenticated !== (localStorage.getItem('accessToken') !== null)) {
+            window.location.reload();
+        }
+    }, [isAuthenticated]);
+
+    const handleLogout = () => {
+        localStorage.removeItem('accessToken');
+        setIsAuthenticated(false);
+    };
+
+    return (
+        <Router>
+            <div className="container-fluid px-4 py-4">
+                {/* Navbar */}
+                <nav className="navbar navbar-expand-lg navbar-dark bg-danger rounded mb-4">
+                    <div className="container-fluid">
+                        <Link to="/" className="navbar-brand text-white">Medify<h6>Admins</h6></Link>
+                        <button
+                            className="navbar-toggler"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#navbarNav"
+                            aria-controls="navbarNav"
+                            aria-expanded="false"
+                            aria-label="Toggle navigation"
+                        >
+                            <span className="navbar-toggler-icon"></span>
+                        </button>
+                        <div className="collapse navbar-collapse" id="navbarNav">
+                            {/* Left Side - Doctors and Hospitals */}
+                            <ul className="navbar-nav me-auto">
+                                <li className="nav-item">
+                                    <Link to="/doctors" className="nav-link text-white">Doctors</Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link to="/hospitals" className="nav-link text-white">Hospitals</Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link to="/verifyrequests" className="nav-link text-white">VerifyRequests</Link>
+                                </li>
+                            </ul>
+
+                            {/* Right Side - Authentication */}
+                            <ul className="navbar-nav ms-auto d-flex align-items-center">
+                                {isAuthenticated ? (
+                                    <>
+                                        <li className="nav-item">
+                                            <Link to={`/profile/${userId}`} className="nav-link text-white d-flex align-items-center">
+                                                <img
+                                                    src="https://via.placeholder.com/40"
+                                                    alt="User Avatar"
+                                                    className="rounded-circle me-2"
+                                                    style={{ width: '40px', height: '40px' }}
+                                                />
+                                                Profile
+                                            </Link>
+                                        </li>
+                                        <li className="nav-item">
+                                            <Link to={`/validate/${userId}`} className="nav-link text-white d-flex align-items-center">
+                                                Validate
+                                            </Link>
+                                        </li>
+                                        <li className="nav-item">
+                                            <button
+                                                className="btn btn-link nav-link text-white"
+                                                style={{ textDecoration: 'none' }}
+                                                onClick={handleLogout}
+                                            >
+                                                Logout
+                                            </button>
+                                        </li>
+                                    </>
+                                ) : (
+                                    <li className="nav-item d-flex">
+                                        <Link to="/login" className="nav-link text-white">Login</Link>
+                                    </li>
+                                )}
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+
+                {/* Routing Pages */}
+                <Routes>
+                    <Route path="/" element={<MainPage />} />
+                    <Route path="/doctors" element={<DoctorsPage />} />
+                    <Route path="/hospitals" element={<HospitalsPage />} />
+                    <Route path="/doctor/:id" element={<DoctorProfilePage />} />
+                    <Route path="/hospital/:id" element={<HospitalProfilePage />} />
+                    <Route path="/profile/:id" element={<DoctorProfilePage />} />
+                    <Route path="/verifyrequests/" element={<VerifyRequestsPage />} />
+                </Routes>
+            </div>
+        </Router>
+    );
+};
 
 export default App;
