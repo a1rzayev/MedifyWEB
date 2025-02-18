@@ -146,7 +146,7 @@ const Navbar = ({ isAuthenticated, userId, handleLogout }) => {
         <nav className="navbar navbar-expand-lg navbar-dark bg-primary rounded shadow-lg p-3">
             <div className="container-fluid">
                 <Link to="/" className="navbar-brand text-white fw-bold fs-4">
-                    Medify <span className="fs-6">Admin</span>
+                    Medify <span className="fs-6"></span>
                 </Link>
                 <button
                     className="navbar-toggler"
@@ -173,22 +173,10 @@ const Navbar = ({ isAuthenticated, userId, handleLogout }) => {
                                 👨‍⚕️ Həkimlər
                             </Link>
                         </li>
-                        {/* Patients Button */}
-                        <li className="nav-item">
-                            <Link to="/patients" className={`nav-link text-white fs-5 fw-semibold rounded-pill p-3 ${isActive('/patients')}`}>
-                                😷 Pasientlər
-                            </Link>
-                        </li>
                         {/* Hospitals Button */}
                         <li className="nav-item">
                             <Link to="/hospitals" className={`nav-link text-white fs-5 fw-semibold rounded-pill p-3 ${isActive('/hospitals')}`}>
                                 🏥 Xəstəxanalar
-                            </Link>
-                        </li>
-                        {/* Verify Requests Button */}
-                        <li className="nav-item">
-                            <Link to="/verifyrequests" className={`nav-link text-white fs-5 fw-semibold rounded-pill p-3 ${isActive('/verifyrequests')}`}>
-                                ✅ Təsdiqləmə
                             </Link>
                         </li>
                     </ul>
