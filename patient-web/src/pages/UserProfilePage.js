@@ -1,149 +1,164 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const UserProfilePage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+
     const [user, setUser] = useState({
         id,
         name: "",
         surname: "",
         birthdate: "",
-        gender: "", // This will hold the index of the gender
+        gender: "",
         phone: "",
         email: "",
         passwordHash: "",
-        dateJoined: ""
     });
+
     const [genders, setGenders] = useState([]);
 
     useEffect(() => {
-        // Fetch gender enum values from the backend
-        axios.get("http://localhost:5250/api/Patient/Genders")  // Update the endpoint if necessary
-            .then(response => {
-                setGenders(response.data); // Store gender values in the state
-            })
-            .catch(error => {
-                console.error("Error fetching genders", error);
-            });
+        axios.get("http://localhost:5250/api/Patient/Genders")
+            .then(response => setGenders(response.data))
+            .catch(error => console.error("Cinslər yüklənərkən xəta baş verdi", error));
 
-        // Fetch the existing user data (for update)
-        axios.get(`http://localhost:5250/api/Patient/${id}`)  // Update the endpoint if necessary
+        axios.get(`http://localhost:5250/api/Patient/${id}`)
             .then(response => {
-                setUser({
-                    ...user,
+                setUser(prevUser => ({
+                    ...prevUser,
                     name: response.data.name,
                     surname: response.data.surname,
                     birthdate: response.data.birthdate,
                     gender: response.data.gender,
                     phone: response.data.phone,
                     email: response.data.email,
-                });
+                }));
             })
-            .catch(error => {
-                console.error("Error fetching user data", error);
-            });
+            .catch(error => console.error("İstifadəçi məlumatları yüklənərkən xəta baş verdi", error));
     }, [id]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setUser({ ...user, [name]: value });
+        setUser(prevUser => ({ ...prevUser, [name]: value }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            // Send gender by index (gender array)
-            const response = await axios.put(
-                `http://localhost:5250/api/Patient/${id}`, // Correct the endpoint if needed
-                {
-                    ...user,
-                    gender: genders[user.gender]  // Map gender index to actual value
-                }
+            await axios.put(
+                `http://localhost:5250/api/Patient/${id}`,
+                { ...user, gender: genders[user.gender] }
             );
-            alert("User updated successfully!");
-            navigate("/"); // Navigate after successful update
+            alert("Məlumatlar uğurla yeniləndi!");
+            navigate("/");
         } catch (error) {
-            console.error("Error updating user", error);
-            alert("Failed to update user.");
+            console.error("İstifadəçi yenilənmədi", error);
+            alert("Məlumatları yeniləmək mümkün olmadı.");
         }
     };
 
     return (
-        <div className="flex justify-center items-center h-screen">
-            <div className="w-96 p-6 shadow-lg bg-white rounded-lg">
-                <h2 className="text-xl font-bold mb-4">Update User</h2>
+        <div className="d-flex justify-content-center align-items-center min-vh-100 bg-light">
+            <div className="card shadow-lg p-4 w-50">
+                <h2 className="text-center text-primary">Profil Məlumatlarını Yenilə</h2>
                 <form onSubmit={handleSubmit}>
-                    <input
-                        type="text"
-                        name="name"
-                        placeholder="Name"
-                        value={user.name}
-                        onChange={handleChange}
-                        className="mb-2 w-full p-2 border rounded"
-                        required
-                    />
-                    <input
-                        type="text"
-                        name="surname"
-                        placeholder="Surname"
-                        value={user.surname}
-                        onChange={handleChange}
-                        className="mb-2 w-full p-2 border rounded"
-                        required
-                    />
-                    <input
-                        type="date"
-                        name="birthdate"
-                        value={user.birthdate}
-                        onChange={handleChange}
-                        className="mb-2 w-full p-2 border rounded"
-                    />
-                    <select
-                        name="gender"
-                        value={user.gender}
-                        onChange={handleChange}
-                        className="mb-2 w-full p-2 border rounded"
-                    >
-                        <option value="">Select Gender</option>
-                        {genders.map((gender, index) => (
-                            <option key={index} value={index}>
-                                {gender}
-                            </option>
-                        ))}
-                    </select>
-                    <input
-                        type="text"
-                        name="phone"
-                        placeholder="Phone"
-                        value={user.phone}
-                        onChange={handleChange}
-                        className="mb-2 w-full p-2 border rounded"
-                    />
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="Email"
-                        value={user.email}
-                        onChange={handleChange}
-                        className="mb-2 w-full p-2 border rounded"
-                        required
-                    />
-                    <input
-                        type="password"
-                        name="passwordHash"
-                        placeholder="New Password"
-                        value={user.passwordHash}
-                        onChange={handleChange}
-                        className="mb-2 w-full p-2 border rounded"
-                    />
-                    <button
-                        type="submit"
-                        className="w-full mt-4 p-2 bg-blue-500 text-white rounded"
-                    >
-                        Update
+                    <div className="mb-3">
+                        <label className="form-label">Ad</label>
+                        <input
+                            type="text"
+                            name="name"
+                            className="form-control"
+                            placeholder="Adınızı daxil edin"
+                            value={user.name}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+
+                    <div className="mb-3">
+                        <label className="form-label">Soyad</label>
+                        <input
+                            type="text"
+                            name="surname"
+                            className="form-control"
+                            placeholder="Soyadınızı daxil edin"
+                            value={user.surname}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+
+                    <div className="mb-3">
+                        <label className="form-label">Doğum tarixi</label>
+                        <input
+                            type="date"
+                            name="birthdate"
+                            className="form-control"
+                            value={user.birthdate}
+                            onChange={handleChange}
+                        />
+                    </div>
+
+                    <div className="mb-3">
+                        <label className="form-label">Cins</label>
+                        <select
+                            name="gender"
+                            className="form-select"
+                            value={user.gender}
+                            onChange={handleChange}
+                        >
+                            <option value="">Cins seçin</option>
+                            {genders.map((gender, index) => (
+                                <option key={index} value={index}>
+                                    {gender}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="mb-3">
+                        <label className="form-label">Telefon</label>
+                        <input
+                            type="text"
+                            name="phone"
+                            className="form-control"
+                            placeholder="Telefon nömrənizi daxil edin"
+                            value={user.phone}
+                            onChange={handleChange}
+                        />
+                    </div>
+
+                    <div className="mb-3">
+                        <label className="form-label">Email</label>
+                        <input
+                            type="email"
+                            name="email"
+                            className="form-control"
+                            placeholder="Email ünvanınızı daxil edin"
+                            value={user.email}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+
+                    <div className="mb-3">
+                        <label className="form-label">Yeni şifrə</label>
+                        <input
+                            type="password"
+                            name="passwordHash"
+                            className="form-control"
+                            placeholder="Yeni şifrə təyin edin"
+                            value={user.passwordHash}
+                            onChange={handleChange}
+                        />
+                    </div>
+
+                    <button type="submit" className="btn btn-primary w-100">
+                        Yenilə
                     </button>
                 </form>
             </div>

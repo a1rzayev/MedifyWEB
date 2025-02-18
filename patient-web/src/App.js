@@ -135,6 +135,7 @@ import MainPage from './pages/MainPage';
 import { jwtDecode } from 'jwt-decode';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
+import UserProfilePage from './pages/UserProfilePage';
 
 const Navbar = ({ isAuthenticated, userId, handleLogout }) => {
     const location = useLocation();
@@ -188,18 +189,18 @@ const Navbar = ({ isAuthenticated, userId, handleLogout }) => {
                                     <Link to={`/profile/${userId}`} className={`nav-link text-white fs-5 fw-semibold rounded-pill p-3 ${isActive(`/profile/${userId}`)}`}>
                                         <img
                                             src="https://via.placeholder.com/40"
-                                            alt="İstifadəçi Avatarı"
+                                            alt="Avatar"
                                             className="rounded-circle border border-light me-2"
                                             style={{ width: '40px', height: '40px' }}
                                         />
                                         Profil
                                     </Link>
                                 </li>
-                                <li className="nav-item">
+                                {/* <li className="nav-item">
                                     <Link to={`/validate/${userId}`} className={`nav-link text-white fs-5 fw-semibold rounded-pill p-3 ${isActive(`/validate/${userId}`)}`}>
                                         🔍 Doğrula
                                     </Link>
-                                </li>
+                                </li> */}
                                 <li className="nav-item">
                                     <button
                                         className="btn btn-outline-light ms-3 px-4 py-2 rounded-pill"
@@ -264,7 +265,7 @@ const App = () => {
                         <Route path="/hospitals" element={<HospitalsPage />} />
                         <Route path="/doctor/:id" element={<DoctorProfilePage />} />
                         <Route path="/hospital/:id" element={<HospitalProfilePage />} />
-                        <Route path="/profile/:id" element={<DoctorProfilePage />} />
+                        <Route path="/profile/:id" element={<UserProfilePage />} />
                         <Route path="/login" element={<LoginPage />} />
                         <Route path="/signup" element={<SignupPage />} />
                     </Routes>
