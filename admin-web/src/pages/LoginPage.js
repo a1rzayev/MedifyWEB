@@ -40,7 +40,7 @@ const LoginPage = () => {
             sessionStorage.setItem("refreshToken", data.refreshToken);
 
 
-            navigate('/user-profile');
+            navigate('/');
             window.location.reload();
         } catch (err) {
             setError('Login failed.');
@@ -54,7 +54,7 @@ const LoginPage = () => {
 
     return (
         <div className="container py-4">
-            <h1 className="mb-4 text-center">Login</h1>
+            <h1 className="mb-4 text-center">Hesaba qiriş</h1>
             {error && <div className="alert alert-danger">{error}</div>}
             <form onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: '0 auto' }}>
                 <div className="mb-3">
@@ -70,7 +70,7 @@ const LoginPage = () => {
                 </div>
 
                 <div className="mb-3">
-                    <label className="form-label">Password</label>
+                    <label className="form-label">Şifrə</label>
                     <div className="input-group">
                         <input
                             type={showPassword ? "text" : "password"}
@@ -85,18 +85,18 @@ const LoginPage = () => {
                             onClick={togglePasswordVisibility}
                             className="btn btn-outline-secondary"
                         >
-                            {showPassword ? "Hide" : "Show"}
+                            {showPassword ? "🔓" : "🔒"}
                         </button>
                     </div>
                 </div>
 
-                <button type="submit" className="btn btn-primary w-100 mt-3">Login</button>
+                <button type="submit" className="btn btn-primary w-100 mt-3">Daxil ol</button>
             </form>
 
             {/* <div className="mt-3 text-center">
-                <p>Don't have an account?
+                <p>Hesabınız yoxdursa{" "} 
                     <a className="btn-link text-center" onClick={handleSignupRedirect}>
-                        Sign Up
+                        Qeydiyyatdan keç
                     </a>
                 </p>
             </div> */}

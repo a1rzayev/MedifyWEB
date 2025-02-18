@@ -40,7 +40,7 @@ const LoginPage = () => {
             sessionStorage.setItem("refreshToken", data.refreshToken);
 
 
-            navigate('/user-profile');
+            navigate('/');
             window.location.reload();
         } catch (err) {
             setError('Login failed.');
