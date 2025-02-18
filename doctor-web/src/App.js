@@ -190,6 +190,7 @@ const Navbar = ({ isAuthenticated, userId, handleLogout }) => {
                         ) : (
                             <li className="nav-item d-flex">
                                 <Link to="/login" className="btn btn-light text-danger fw-bold px-4 py-2 rounded-pill">🔑 Giriş</Link>
+                                <Link to="/signup" className="nav-link text-white"> 🖊️ Qeydiyyat </Link>
                             </li>
                         )}
                     </ul>
