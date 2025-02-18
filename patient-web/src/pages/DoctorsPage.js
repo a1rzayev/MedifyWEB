@@ -355,12 +355,12 @@ const DoctorsPage = () => {
 
     return (
         <div style={{ padding: '20px' }}>
-            <h1>Doctors List</h1>
+            <h1>Həkimlər</h1>
 
             {/* Search bar */}
             <input
                 type="text"
-                placeholder="Search by name or surname..."
+                placeholder="Ad və ya soyadla axtarış..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 style={{ padding: '10px', marginBottom: '20px', width: '100%' }}
@@ -372,7 +372,7 @@ const DoctorsPage = () => {
                 onChange={(e) => setSelectedSpecialty(e.target.value)}
                 style={{ padding: '10px', marginBottom: '20px', width: '100%' }}
             >
-                <option value="">Select Specialty</option>
+                <option value="">İxtisasın seçin</option>
                 {specialties.map((specialty) => (
                     <option key={specialty} value={specialty}>
                         {specialty}
