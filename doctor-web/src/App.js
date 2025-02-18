@@ -155,7 +155,7 @@ const Navbar = ({ isAuthenticated, userId, handleLogout }) => {
     const isActive = (path) => location.pathname === path ? 'bg-dark text-danger' : '';
 
     return (
-        <nav className="navbar navbar-expand-lg navbar-dark bg-danger rounded shadow-lg p-3">
+        <nav className="navbar navbar-expand-lg navbar-dark bg-success rounded shadow-lg p-3">
             <div className="container-fluid">
                 <Link to="/" className="navbar-brand text-white fw-bold fs-4">
                     Medify <span className="fs-6">Doctor</span>
@@ -169,7 +169,6 @@ const Navbar = ({ isAuthenticated, userId, handleLogout }) => {
                         <li className="nav-item"><Link to="/doctors" className={`nav-link text-white fs-5 fw-semibold rounded-pill p-3 ${isActive('/doctors')}`}>👨‍⚕️ Həkimlər</Link></li>
                         <li className="nav-item"><Link to="/patients" className={`nav-link text-white fs-5 fw-semibold rounded-pill p-3 ${isActive('/patients')}`}>😷 Pasientlər</Link></li>
                         <li className="nav-item"><Link to="/hospitals" className={`nav-link text-white fs-5 fw-semibold rounded-pill p-3 ${isActive('/hospitals')}`}>🏥 Xəstəxanalar</Link></li>
-                        <li className="nav-item"><Link to="/verifyrequests" className={`nav-link text-white fs-5 fw-semibold rounded-pill p-3 ${isActive('/verifyrequests')}`}>✅ Təsdiqləmə</Link></li>
                     </ul>
                     <ul className="navbar-nav ms-auto d-flex align-items-center">
                         {isAuthenticated ? (
