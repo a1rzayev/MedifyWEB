@@ -193,7 +193,7 @@ const Navbar = ({ isAuthenticated, userId, handleLogout }) => {
                                             className="rounded-circle border border-light me-2"
                                             style={{ width: '40px', height: '40px' }}
                                         />
-                                        Profil
+                                        
                                     </Link>
                                 </li>
                                 {/* <li className="nav-item">
