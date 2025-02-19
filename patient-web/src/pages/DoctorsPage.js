@@ -25,134 +25,6 @@ const DoctorsPage = () => {
         }
     }, [isAuthenticated]);
 
-    // useEffect(() => {
-    //     // Test data for doctors
-    //     const fetchedDoctors = [
-    //         {
-    //             "id": 1,
-    //             "name": "Elşən",
-    //             "surname": "Rzayev",
-    //             "speciality": "Cardiologist"
-    //         },
-    //         {
-    //             "id": 2,
-    //             "name": "Leyla",
-    //             "surname": "Huseynova",
-    //             "speciality": "Neurologist"
-    //         },
-    //         {
-    //             "id": 3,
-    //             "name": "Rashad",
-    //             "surname": "Ismayilov",
-    //             "speciality": "Pediatrician"
-    //         },
-    //         {
-    //             "id": 4,
-    //             "name": "Zeynab",
-    //             "surname": "Veliyeva",
-    //             "speciality": "Surgeon"
-    //         },
-    //         {
-    //             "id": 5,
-    //             "name": "Emin",
-    //             "surname": "Aslanov",
-    //             "speciality": "Dermatologist"
-    //         },
-    //         {
-    //             "id": 6,
-    //             "name": "Gulzar",
-    //             "surname": "Abdullayeva",
-    //             "speciality": "Orthopedic"
-    //         },
-    //         {
-    //             "id": 7,
-    //             "name": "Farid",
-    //             "surname": "Bashirov",
-    //             "speciality": "Psychiatrist"
-    //         },
-    //         {
-    //             "id": 8,
-    //             "name": "Sabina",
-    //             "surname": "Taghiyeva",
-    //             "speciality": "Oncologist"
-    //         },
-    //         {
-    //             "id": 9,
-    //             "name": "Nigar",
-    //             "surname": "Mirzayeva",
-    //             "speciality": "Endocrinologist"
-    //         },
-    //         {
-    //             "id": 10,
-    //             "name": "Ramin",
-    //             "surname": "Ismayilov",
-    //             "speciality": "Gastroenterologist"
-    //         },
-    //         {
-    //             "id": 11,
-    //             "name": "Aynur",
-    //             "surname": "Aliyeva",
-    //             "speciality": "Radiologist"
-    //         },
-    //         {
-    //             "id": 12,
-    //             "name": "Nijat",
-    //             "surname": "Mammadov",
-    //             "speciality": "Anesthesiologist"
-    //         },
-    //         {
-    //             "id": 13,
-    //             "name": "Kamran",
-    //             "surname": "Huseynov",
-    //             "speciality": "Pediatrician"
-    //         },
-    //         {
-    //             "id": 14,
-    //             "name": "Sahil",
-    //             "surname": "Bayramov",
-    //             "speciality": "Orthopedic"
-    //         },
-    //         {
-    //             "id": 15,
-    //             "name": "Zakir",
-    //             "surname": "Novruzov",
-    //             "speciality": "Urologist"
-    //         },
-    //         {
-    //             "id": 16,
-    //             "name": "Gulshan",
-    //             "surname": "Mammadova",
-    //             "speciality": "Psychiatrist"
-    //         },
-    //         {
-    //             "id": 17,
-    //             "name": "Ibrahim",
-    //             "surname": "Mammadov",
-    //             "speciality": "Neurologist"
-    //         },
-    //         {
-    //             "id": 18,
-    //             "name": "Lala",
-    //             "surname": "Bayramova",
-    //             "speciality": "Otorhinolaryngologist"
-    //         },
-    //         {
-    //             "id": 19,
-    //             "name": "Sahar",
-    //             "surname": "Mammadova",
-    //             "speciality": "Pathologist"
-    //         },
-    //         {
-    //             "id": 20,
-    //             "name": "Rana",
-    //             "surname": "Rzayeva",
-    //             "speciality": "Surgeon"
-    //         }
-    //     ]
-
-    //     setDoctors(fetchedDoctors);
-    // }, []);
-
     useEffect(() => {
         const fetchDoctors = async () => {
             const response = await fetch('http://localhost:5250/api/Doctor');
@@ -164,14 +36,21 @@ const DoctorsPage = () => {
     }, []);
 
     useEffect(() => {
-        const fetchSpecialities = async () => {
-            const response = await fetch('http://localhost:5250/api/Enum/Specialities');
-            const data = await response.json();
-            setSpecialities(data);
-        };
-
-        fetchSpecialities();
-    }, []);
+      const fetchSpecialities = async () => {
+          try {
+              const response = await fetch('http://localhost:5250/api/Enum/Specialities');
+              const data = await response.json();
+              console.log("Fetched specialities:", data);  // 👈 Check console output
+              setSpecialities(Array.isArray(data) ? data : []);  // Ensure it's an array
+          } catch (error) {
+              console.error("Error fetching specialities:", error);
+              setSpecialities([]);  // Avoid map errors on failure
+          }
+      };
+  
+      fetchSpecialities();
+  }, []);
+  
 
 
     const filteredDoctors = doctors.filter(doctor => {
@@ -180,37 +59,6 @@ const DoctorsPage = () => {
         const matchesSpecialty = selectedSpecialty ? doctor.speciality === selectedSpecialty : true;
         return matchesName && matchesSpecialty;
     });
-
-
-    // const handleRequest = async (doctorId) => {
-    //     try {
-    //         const response = await fetch(`http://localhost:5250/api/Patient/ReuqestRendezvouz/${doctorId}/${userId}`, {
-    //             method: 'POST',  // Use PUT method
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //             },
-    //             body: JSON.stringify({
-    //                 // Add any necessary data to be sent in the request body
-    //                 status: 'requested',  // Example of data you may want to send
-    //             }),
-    //         });
-
-    //         if (!response.ok) {
-    //             throw new Error('Request failed');
-    //         }
-
-    //         // Handle success (e.g., show a success message or update UI)
-    //         const data = await response.json();
-    //         console.log('Response:', data);
-    //     } catch (error) {
-    //         // Handle error (e.g., show an error message)
-    //         console.error('Error:', error);
-    //     }
-    // };
-
-    const handleLoginRedirect = () => {
-        navigate("/login");
-    };
 
     // Function to generate avatar initials
     const getAvatarInitials = (name, surname) => {

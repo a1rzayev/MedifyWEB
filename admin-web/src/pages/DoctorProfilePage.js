@@ -1,255 +1,116 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 const DoctorProfilePage = () => {
-    const { id } = useParams();
-    const [doctor, setDoctor] = useState(null);
-    const [error, setError] = useState(null);
-    const [isEditing, setIsEditing] = useState(false);
-    const [formData, setFormData] = useState({});
-    const [isOwner, setIsOwner] = useState(false);
-    const [specialities, setSpecialities] = useState([]);
-    const [genders, setGenders] = useState([]);
-    const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const { id } = useParams();
+  const [doctor, setDoctor] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem("accessToken") !== null);
+  const [userRole, setUserRole] = useState(null); // To check admin privileges
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchDoctor = async () => {
-            try {
-                if (!id) {
-                    throw new Error('Invalid doctor ID');
-                }
-                const response = await axios.get(`http://localhost:5250/api/Doctor/${id}`);
-                setDoctor(response.data);
-                setFormData(response.data);
-
-                const token = localStorage.getItem('accessToken');
-                if (token) {
-                    const decodedToken = jwtDecode(token);
-                    const userId = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
-                    setIsOwner(userId === id);
-                }
-            } catch (error) {
-                setError(error.message);
-                console.error('Error fetching doctor:', error);
-            }
-        };
-
-        const fetchSpecialities = async () => {
-            try {
-                const response = await axios.get("http://localhost:5250/api/Doctor/Specialities");
-                setSpecialities(response.data);
-            } catch (error) {
-                console.error("Error fetching specialities:", error);
-            }
-        };
-
-        const fetchGenders = async () => {
-            try {
-                const response = await axios.get("http://localhost:5250/api/Doctor/Genders");
-                setGenders(response.data);
-            } catch (error) {
-                console.error("Error fetching genders:", error);
-            }
-        };
-
-        fetchGenders();
-        fetchDoctor();
-        fetchSpecialities();
-    }, [id]);
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prevState => ({ ...prevState, [name]: value }));
-    };
-
-    const handleWorkHoursChange = (day, field, value) => {
-        // Ensure the value is in the correct time format (HH:mm), padding if necessary
-        const formattedValue = field === 'start' || field === 'end' ? value.padStart(5, '0') : value;
-        // Check if enabled value is properly set to a boolean
-        const enabled = field === 'enabled' ? (value === 'true') : undefined;
-    
-        setFormData(prevState => ({
-            ...prevState,
-            workDaysHours: {
-                ...prevState.workDaysHours,
-                [day]: {
-                    ...prevState.workDaysHours?.[day],
-                    [field]: formattedValue || (enabled !== undefined ? enabled : prevState.workDaysHours?.[day]?.[field])
-                }
-            }
-        }));
-    };
-    
-
-
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        // Check if all basic fields are filled out
-        if (!formData.name || !formData.surname || !formData.email || !formData.phone || !formData.birthdate || !formData.gender || !formData.speciality) {
-            setError("Please fill out all the basic fields.");
-            return;
-        }
-
-        // Validate workDaysHours to ensure that each enabled day has both start and end time
-        const workDaysHours = formData.workDaysHours || {};
-        for (const day of daysOfWeek) {
-            const dayHours = workDaysHours[day];
-
-            if (dayHours && dayHours.enabled) {
-                // Ensure both start and end times are provided if the day is enabled
-                if (!dayHours.start || !dayHours.end) {
-                    setError(`Please provide both start and end times for ${day}.`);
-                    return;
-                }
-
-                // Ensure the start time is before the end time
-                if (dayHours.start >= dayHours.end) {
-                    setError(`Start time must be before end time for ${day}.`);
-                    return;
-                }
-            }
-        }
-
-        // If all validations pass, proceed with form submission
-        try {
-            const requestData = {
-                ...formData,
-                workDaysHours: workDaysHours
-            };
-
-            const response = await axios.put(`http://localhost:5250/api/Doctor/${id}`, requestData, {
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-            setDoctor(formData);
-            setIsEditing(false);
-            console.log(formData);
-            console.log(workDaysHours);
-        } catch (error) {
-            setError('Failed to update profile');
-            console.error('Error updating doctor profile:', error);
-
-            console.log(formData);
-            console.log(workDaysHours);
-        }
-    };
-
-
-
-
-    if (error) {
-        return <div className="text-center text-danger">Error: {error}</div>;
+  useEffect(() => {
+    if (isAuthenticated) {
+      const token = localStorage.getItem("accessToken");
+      if (token) {
+        const decodedToken = jwtDecode(token);
+        setUserRole(decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]);
+      }
     }
+  }, [isAuthenticated]);
 
-    if (!doctor) {
-        return <div className="text-center">Loading...</div>;
+  useEffect(() => {
+    const fetchDoctor = async () => {
+      try {
+        const response = await fetch(`http://localhost:5250/api/Doctor/${id}`);
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        setDoctor(data);
+      } catch (error) {
+        console.error("Failed to fetch doctor data:", error);
+      }
+    };
+
+    fetchDoctor();
+  }, [id]);
+
+  const handleBanToggle = async () => {
+    try {
+      const response = await fetch(`http://localhost:5250/api/Doctor/${id}/ban`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      });
+
+      if (response.ok) {
+        alert(doctor.isBanned ? "Həkim açıldı!" : "Həkim banlandı!");
+        setDoctor({ ...doctor, isBanned: !doctor.isBanned });
+      } else {
+        alert("Xəta baş verdi.");
+      }
+    } catch (error) {
+      console.error("Failed to toggle ban status:", error);
     }
+  };
 
-    return (
-        <div className="container mt-5">
-            <h1 className="text-center">Doctor Profile</h1>
-            <div className="card">
-                <div className="card-body">
-                    {isEditing ? (
-                        <form onSubmit={handleSubmit}>
-                            <div className="mb-3">
-                                <label className="form-label">Name</label>
-                                <input type="text" name="name" className="form-control" value={formData.name} onChange={handleChange} required />
-                            </div>
-                            <div className="mb-3">
-                                <label className="form-label">Surname</label>
-                                <input type="text" name="surname" className="form-control" value={formData.surname} onChange={handleChange} required />
-                            </div>
-                            <div className="mb-3">
-                                <label className="form-label">Email</label>
-                                <input type="email" name="email" className="form-control" value={formData.email} onChange={handleChange} required />
-                            </div>
-                            <div className="mb-3">
-                                <label className="form-label">Phone</label>
-                                <input type="text" name="phone" className="form-control" value={formData.phone || ''} onChange={handleChange} required />
-                            </div>
-                            <div className="mb-3">
-                                <label className="form-label">Birthdate</label>
-                                <input type="date" name="birthdate" className="form-control" value={formData.birthdate || ''} onChange={handleChange} required />
-                            </div>
-                            <div className="mb-3">
-                                <label className="form-label">Gender</label>
-                                <select name="gender" className="form-control" value={formData.gender || ''} onChange={handleChange} required>
-                                    <option value="">Select Gender</option>
-                                    {genders.map((spec) => (
-                                        <option key={spec} value={spec}>{spec}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="mb-3">
-                                <label className="form-label">Speciality</label>
-                                <select name="speciality" className="form-control" value={formData.speciality || ''} onChange={handleChange} required>
-                                    <option value="">Select Speciality</option>
-                                    {specialities.map((spec) => (
-                                        <option key={spec} value={spec}>{spec}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <h4>Working Days & Hours</h4>
-                            {daysOfWeek.map(day => (
-                                <div className="mb-3">
-                                    <input
-                                        type="checkbox"
-                                        id={day}
-                                        checked={!!formData.workDaysHours?.[day]?.enabled}
-                                        onChange={(e) => handleWorkHoursChange(day, 'enabled', e.target.checked)}
-                                    />
-                                    <label htmlFor={day} className="ms-2">{day}</label>
-                                    {formData.workDaysHours?.[day]?.enabled && (
-                                        <div className="d-flex mt-2">
-                                            <input
-                                                type="time"
-                                                className="form-control me-2"
-                                                value={formData.workDaysHours?.[day]?.start || ''}
-                                                onChange={(e) => handleWorkHoursChange(day, 'start', e.target.value)}
-                                            />
-                                            <input
-                                                type="time"
-                                                className="form-control"
-                                                value={formData.workDaysHours?.[day]?.end || ''}
-                                                onChange={(e) => handleWorkHoursChange(day, 'end', e.target.value)}
-                                            />
-                                            {/* If you're using a checkbox or something else to toggle 'enabled' */}
-                                            <input
-                                                type="checkbox"
-                                                checked={formData.workDaysHours?.[day]?.enabled || false}
-                                                onChange={(e) => handleWorkHoursChange(day, 'enabled', e.target.checked.toString())}
-                                            />
+  const handleDelete = async () => {
+    if (window.confirm("Bu həkimi silmək istədiyinizə əminsiniz?")) {
+      try {
+        const response = await fetch(`http://localhost:5250/api/Doctor/${id}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        });
 
-                                        </div>
-                                    )}
-                                </div>
+        if (response.ok) {
+          alert("Həkim silindi.");
+          navigate("/doctors"); // Redirect to the doctors list
+        } else {
+          alert("Silinmə zamanı xəta baş verdi.");
+        }
+      } catch (error) {
+        console.error("Failed to delete doctor:", error);
+      }
+    }
+  };
 
-                            ))}
-                            <button type="submit" className="btn btn-success">Save Changes</button>
-                            <button type="button" className="btn btn-secondary ms-2" onClick={() => setIsEditing(false)}>Cancel</button>
-                        </form>
-                    ) : (
-                        <>
-                            <h2 className="card-title">{doctor.name} {doctor.surname}</h2>
-                            <p><strong>Email:</strong> {doctor.email}</p>
-                            <p><strong>Phone:</strong> {doctor.phone}</p>
-                            <p><strong>Birthdate:</strong> {doctor.birthdate}</p>
-                            <p><strong>Gender:</strong> {doctor.gender}</p>
-                            <p><strong>Speciality:</strong> {doctor.speciality}</p>
-                            <p><strong>Date Joined:</strong> {doctor.dateJoined}</p>
-                            {isOwner && <button className="btn btn-primary mt-3" onClick={() => setIsEditing(true)}>Edit Profile</button>}
-                        </>
-                    )}
-                </div>
+  if (!doctor) {
+    return <div className="text-center mt-5">Yüklənir...</div>;
+  }
+
+  return (
+    <div className="container mt-5">
+      <h1 className="text-center text-primary">Həkim Profili</h1>
+      <div className="card shadow-lg mx-auto" style={{ maxWidth: "400px" }}>
+        <div className="card-body">
+          <h2 className="card-title">{doctor.name} {doctor.surname}</h2>
+          <p><strong>İxtisas:</strong> {doctor.speciality}</p>
+          <p><strong>Reytinq:</strong> ⭐ {doctor.rating}</p>
+          <p><strong>Status:</strong> {doctor.isBanned ? "Banlanıb" : "Aktiv"}</p>
+
+          {userRole === "admin" && (
+            <div className="mt-4 d-flex justify-content-between">
+              <button
+                className={`btn ${doctor.isBanned ? "btn-success" : "btn-warning"}`}
+                onClick={handleBanToggle}
+              >
+                {doctor.isBanned ? "Banı aç" : "Banla"}
+              </button>
+
+              <button className="btn btn-danger" onClick={handleDelete}>
+                Sil
+              </button>
             </div>
+          )}
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default DoctorProfilePage;

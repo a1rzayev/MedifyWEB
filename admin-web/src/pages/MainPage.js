@@ -57,86 +57,35 @@
 // export default MainPage;
 
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const MainPage = () => {
-    // JSON data directly inside the component
-    const [logs, setLogs] = useState([
-        { id: 1, doctorName: "Dr. Elçin Quliyev", patientName: "Murad Əliyev", description: "Ümumi müayinə", date: "2025-02-20T10:30:00Z", status: "accepted" },
-        { id: 2, doctorName: "Dr. Leyla Məmmədova", patientName: "Aytən Rüstəmova", description: "Qan analizinin nəticələri", date: "2025-02-18T15:45:00Z", status: "accepted" },
-        { id: 3, doctorName: "Dr. Ramil Hüseynov", patientName: "Cavid Orucov", description: "Diş təmizliyi", date: "2025-02-22T09:00:00Z", status: "rejected" },
-        { id: 4, doctorName: "Dr. Nigar Həsənova", patientName: "Günay Vəliyeva", description: "Göz müayinəsi", date: "2025-02-25T13:15:00Z", status: "rejected" },
-        { id: 5, doctorName: "Dr. Kamran Əhmədov", patientName: "Fuad İsmayılov", description: "Bel ağrısı üçün konsultasiya", date: "2025-02-21T11:00:00Z", status: "pending" },
-        { id: 6, doctorName: "Dr. Sevinc Rəhimova", patientName: "Nərgiz Abbasova", description: "İllik müayinə", date: "2025-02-19T14:30:00Z", status: "pending" },
-        { id: 7, doctorName: "Dr. Elçin Quliyev", patientName: "Emin Hüseynov", description: "Rentgen müayinəsi", date: "2025-02-23T16:00:00Z", status: "pending" },
-        { id: 8, doctorName: "Dr. Leyla Məmmədova", patientName: "Səbinə Məmmədova", description: "Vitamin testi", date: "2025-02-26T10:45:00Z", status: "accepted" }
-    ]);
+    const [logs, setLogs] = useState([]);
+    
+    useEffect(() => {
+        const fetchLogs = async () => {
+            const response = await fetch('http://localhost:5250/api/Log'); // Replace with the correct endpoint
+            const data = await response.json();
+            setLogs(data);
+        };
 
-    // Categorize logs
-    const acceptedLogs = logs.filter(log => log.status === 'accepted');
-    const rejectedLogs = logs.filter(log => log.status === 'rejected');
-    const pendingLogs = logs.filter(log => log.status === 'pending');
-
-    // Handle Approve/Deny Actions
-    const handleAction = (id, status) => {
-        setLogs(prevLogs =>
-            prevLogs.map(log =>
-                log.id === id ? { ...log, status } : log
-            )
-        );
-    };
+        fetchLogs();
+    }, []);
 
     return (
         <div className="container mt-5">
-            <h1 className="text-center mb-4">Randevu Müraciətləri</h1>
+            <h1 className="text-center mb-4">Tarixçə</h1>
 
             <div className="row">
-                {/* Accepted Requests */}
+                {/* Logs */}
                 <div className="col-md-4">
-                    <h2 className="text-success">Qəbul Edilənlər</h2>
                     <ul className="list-group">
-                        {acceptedLogs.map(log => (
+                        {logs.map(log => (
                             <li key={log.id} className="list-group-item">
                                 <p><strong>Həkim:</strong> {log.doctorName}</p>
                                 <p><strong>Pasient:</strong> {log.patientName}</p>
                                 <p><strong>Təsvir:</strong> {log.description}</p>
                                 <p><strong>Vaxt:</strong> {new Date(log.date).toLocaleString()}</p>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-
-                {/* Rejected Requests */}
-                <div className="col-md-4">
-                    <h2 className="text-danger">İmtina Edilənlər</h2>
-                    <ul className="list-group">
-                        {rejectedLogs.map(log => (
-                            <li key={log.id} className="list-group-item">
-                                <p><strong>Həkim:</strong> {log.doctorName}</p>
-                                <p><strong>Pasient:</strong> {log.patientName}</p>
-                                <p><strong>Təsvir:</strong> {log.description}</p>
-                                <p><strong>Vaxt:</strong> {new Date(log.date).toLocaleString()}</p>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-
-                {/* Pending Requests with Approve/Deny Buttons */}
-                <div className="col-md-4">
-                    <h2 className="text-warning">Gözləyənlər</h2>
-                    <ul className="list-group">
-                        {pendingLogs.map(log => (
-                            <li key={log.id} className="list-group-item">
-                                <p><strong>Həkim:</strong> {log.doctorName}</p>
-                                <p><strong>Pasient:</strong> {log.patientName}</p>
-                                <p><strong>Təsvir:</strong> {log.description}</p>
-                                <p><strong>Vaxt:</strong> {new Date(log.date).toLocaleString()}</p>
-                                <button className="btn btn-success btn-sm me-2" onClick={() => handleAction(log.id, 'accepted')}>
-                                ✅ Qəbul Et
-                                </button>
-                                <button className="btn btn-danger btn-sm" onClick={() => handleAction(log.id, 'rejected')}>
-                                ❌ İmtina Et
-                                </button>
                             </li>
                         ))}
                     </ul>
