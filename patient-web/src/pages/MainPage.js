@@ -1,192 +1,104 @@
-// import React, { useEffect, useState } from 'react';
-// import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams, Link } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
+import axios from "axios";
 
-// const MainPage = () => {
-//     const { id } = useParams();
-//     const [logs, setLogs] = useState([]);
-
-//     useEffect(() => {
-//         const fetchLogs = async () => {
-//             const response = await fetch('http://localhost:5250/api/Log'); // Replace with the correct endpoint
-//             const data = await response.json();
-//             setLogs(data);
-//         };
-
-//         fetchLogs();
-//     }, []);
-
-//     // Filter logs into two categories: accepted and rejected
-//     const acceptedLogs = logs.filter(log => log.status === 'accepted');
-//     const rejectedLogs = logs.filter(log => log.status === 'rejected');
-
-//     return (
-//         <div className="container mt-5">
-//             <h1 className="text-center">Rendez-vous Requests</h1>
-
-//             <div className="mt-4">
-//                 <h2>Accepted Requests</h2>
-//                 <ul className="list-group">
-//                     {acceptedLogs.map((log) => (
-//                         <li key={log.id} className="list-group-item">
-//                             <p><strong>Doctor:</strong> {log.doctorName}</p>
-//                             <p><strong>Patient:</strong> {log.patientName}</p>
-//                             <p><strong>Description:</strong> {log.description}</p>
-//                             <p><strong>Date:</strong> {new Date(log.date).toLocaleString()}</p>
-//                         </li>
-//                     ))}
-//                 </ul>
-//             </div>
-
-//             <div className="mt-4">
-//                 <h2>Rejected Requests</h2>
-//                 <ul className="list-group">
-//                     {rejectedLogs.map((log) => (
-//                         <li key={log.id} className="list-group-item">
-//                             <p><strong>Doctor:</strong> {log.doctorName}</p>
-//                             <p><strong>Patient:</strong> {log.patientName}</p>
-//                             <p><strong>Description:</strong> {log.description}</p>
-//                             <p><strong>Date:</strong> {new Date(log.date).toLocaleString()}</p>
-//                         </li>
-//                     ))}
-//                 </ul>
-//             </div>
-//         </div>
-//     );
-// };
-
-// export default MainPage;
-
-
-// import React, { useEffect, useState } from 'react';
-// import { useParams } from 'react-router-dom';
-
-// const MainPage = () => {
-//     const { id } = useParams();
-//     const [logs, setLogs] = useState([]);
-    
-//     useEffect(() => {
-//         const fetchLogs = async () => {
-//             const response = await fetch('http://localhost:5250/api/Log'); // Replace with the correct endpoint
-//             const data = await response.json();
-//             setLogs(data);
-//         };
-
-//         fetchLogs();
-//     }, []);
-
-//     // Filter logs into two categories: accepted and rejected
-//     const acceptedLogs = logs.filter(log => log.status === 'accepted');
-//     const rejectedLogs = logs.filter(log => log.status === 'rejected');
-
-//     return (
-//         <div className="container mt-5">
-//             <h1 className="text-center">Rendez-vous Requests</h1>
-
-//             <div className="mt-4">
-//                 <h2>Accepted Requests</h2>
-//                 <ul className="list-group">
-//                     {acceptedLogs.map((log) => (
-//                         <li key={log.id} className="list-group-item">
-//                             <p><strong>Doctor:</strong> {log.doctorName}</p>
-//                             <p><strong>Patient:</strong> {log.patientName}</p>
-//                             <p><strong>Description:</strong> {log.description}</p>
-//                             <p><strong>Date:</strong> {new Date(log.date).toLocaleString()}</p>
-//                         </li>
-//                     ))}
-//                 </ul>
-//             </div>
-
-//             <div className="mt-4">
-//                 <h2>Rejected Requests</h2>
-//                 <ul className="list-group">
-//                     {rejectedLogs.map((log) => (
-//                         <li key={log.id} className="list-group-item">
-//                             <p><strong>Doctor:</strong> {log.doctorName}</p>
-//                             <p><strong>Patient:</strong> {log.patientName}</p>
-//                             <p><strong>Description:</strong> {log.description}</p>
-//                             <p><strong>Date:</strong> {new Date(log.date).toLocaleString()}</p>
-//                         </li>
-//                     ))}
-//                 </ul>
-//             </div>
-//         </div>
-//     );
-// };
-
-// export default MainPage;
-
-
-import React, { useState } from 'react';
+const API_BASE_URL = "http://localhost:5250/";
 
 const MainPage = () => {
-    // JSON data directly inside the component
-    const [logs, setLogs] = useState([
-        { id: 1, doctorName: "Dr. Elçin Quliyev", patientName: "Aytən Rüstəmova", description: "Ümumi müayinə", date: "2025-02-20T10:30:00Z", status: "accepted" },
-        { id: 2, doctorName: "Dr. Leyla Məmmədova", patientName: "Aytən Rüstəmova", description: "Qan analizinin nəticələri", date: "2025-02-18T15:45:00Z", status: "accepted" },
-        { id: 3, doctorName: "Dr. Ramil Hüseynov", patientName: "Aytən Rüstəmova", description: "Diş təmizliyi", date: "2025-02-22T09:00:00Z", status: "rejected" },
-        { id: 4, doctorName: "Dr. Nigar Həsənova", patientName: "Aytən Rüstəmova", description: "Göz müayinəsi", date: "2025-02-25T13:15:00Z", status: "rejected" },
-        { id: 5, doctorName: "Dr. Kamran Əhmədov", patientName: "Aytən Rüstəmova", description: "Bel ağrısı üçün konsultasiya", date: "2025-02-21T11:00:00Z", status: "pending" },
-        { id: 6, doctorName: "Dr. Sevinc Rəhimova", patientName: "Aytən Rüstəmova", description: "İllik müayinə", date: "2025-02-19T14:30:00Z", status: "pending" },
-        { id: 7, doctorName: "Dr. Elçin Quliyev", patientName: "Aytən Rüstəmova", description: "Rentgen müayinəsi", date: "2025-02-23T16:00:00Z", status: "pending" },
-        { id: 8, doctorName: "Dr. Leyla Məmmədova", patientName: "Aytən Rüstəmova", description: "Vitamin testi", date: "2025-02-26T10:45:00Z", status: "accepted" }
-    ]);
+    const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem('accessToken') !== null);
+    const [id, setId] = useState(null);
+    const [logs, setLogs] = useState([]);
+    const [states, setStates] = useState([]);
+    
 
-    // Categorize logs
-    const acceptedLogs = logs.filter(log => log.status === 'accepted');
-    const rejectedLogs = logs.filter(log => log.status === 'rejected');
-    const pendingLogs = logs.filter(log => log.status === 'pending');
+    const navigate = useNavigate();
 
-    // Handle Approve/Deny Actions
-    const handleAction = (id, status) => {
-        setLogs(prevLogs =>
-            prevLogs.map(log =>
-                log.id === id ? { ...log, status } : log
-            )
-        );
+    useEffect(() => {
+        if (isAuthenticated) {
+            const token = localStorage.getItem('accessToken');
+            if (token) {
+                const decodedToken = jwtDecode(token);
+                const extractedUserId = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+                setId(extractedUserId);
+            }
+        }
+    }, [isAuthenticated]);
+
+    useEffect(() => {
+        const fetchRequestStates = async () => {
+            try {
+                const response = await axios.get("http://localhost:5250/api/Enum/RequestStates");
+                setStates(response.data);
+            } catch (error) {
+                console.error("Error fetching genders:", error);
+            }
+        };
+
+        fetchRequestStates();
+    }, []);
+    useEffect(() => {
+        if (id) {  // ✅ Ensure id is not null before fetching
+            const fetchLogs = async () => {
+                try {
+                    const response = await fetch(`http://localhost:5250/api/Patient/RendezvouzRequests/${id}`);
+                    const data = await response.json();
+                    setLogs(data);
+                } catch (error) {
+                    console.error("Failed to fetch logs:", error);
+                }
+            };
+
+            fetchLogs();
+        }
+    }, [id]);
+    const stateMap = {
+        [states[0]]: 0, // "Approved" -> 0
+        [states[1]]: 1, // "Pending" -> 1
+        [states[2]]: 2  // "Denied" -> 2
     };
+    const acceptedLogs = logs.filter(log => log.state === 0 || Number(log.State) === 0);
+    const rejectedLogs = logs.filter(log => log.state === 2 || Number(log.State) === 2);
+    const pendingLogs = logs.filter(log => log.state === 1 || Number(log.State) === 1);
+
+
 
     return (
         <div className="container mt-5">
-            <h1 className="text-center mb-4">Randevu Müraciətləri</h1>
-
+            <h1 className="text-center">Randevu Müraciətləri</h1>
             <div className="row">
-                {/* Accepted Requests */}
                 <div className="col-md-4">
                     <h2 className="text-success">Qəbul Edilənlər</h2>
                     <ul className="list-group">
                         {acceptedLogs.map(log => (
                             <li key={log.id} className="list-group-item">
-                                <p><strong>Həkim:</strong> {log.doctorName}</p>
+                                <strong>Patient ID:</strong><Link to={`/patient-profile/${log.patientId}`}> {log.patientId}</Link>
+                                <p><strong>Vaxt:</strong> {new Date(log.dateTime).toLocaleString()}</p>
                                 <p><strong>Təsvir:</strong> {log.description}</p>
-                                <p><strong>Vaxt:</strong> {new Date(log.date).toLocaleString()}</p>
                             </li>
                         ))}
                     </ul>
                 </div>
-
-                {/* Rejected Requests */}
                 <div className="col-md-4">
                     <h2 className="text-danger">İmtina Edilənlər</h2>
                     <ul className="list-group">
                         {rejectedLogs.map(log => (
                             <li key={log.id} className="list-group-item">
-                                <p><strong>Həkim:</strong> {log.doctorName}</p>
+                                <strong>Patient ID:</strong><Link to={`/patient-profile/${log.patientId}`}> {log.patientId}</Link>
+                                <p><strong>Vaxt:</strong> {new Date(log.dateTime).toLocaleString()}</p>
                                 <p><strong>Təsvir:</strong> {log.description}</p>
-                                <p><strong>Vaxt:</strong> {new Date(log.date).toLocaleString()}</p>
                             </li>
                         ))}
                     </ul>
                 </div>
-
-                {/* Pending Requests with Approve/Deny Buttons */}
                 <div className="col-md-4">
                     <h2 className="text-warning">Gözləyənlər</h2>
                     <ul className="list-group">
                         {pendingLogs.map(log => (
                             <li key={log.id} className="list-group-item">
-                                <p><strong>Həkim:</strong> {log.doctorName}</p>
+                                <strong>Patient ID:</strong><Link to={`/patient-profile/${log.patientId}`}> {log.patientId}</Link>
+                                <p><strong>Vaxt:</strong> {new Date(log.dateTime).toLocaleString()}</p>
                                 <p><strong>Təsvir:</strong> {log.description}</p>
-                                <p><strong>Vaxt:</strong> {new Date(log.date).toLocaleString()}</p>
                             </li>
                         ))}
                     </ul>
@@ -197,3 +109,5 @@ const MainPage = () => {
 };
 
 export default MainPage;
+
+

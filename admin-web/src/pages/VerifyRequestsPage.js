@@ -144,19 +144,25 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const VerifyRequestsPage = () => {
-    const [verifyRequests, setVerifyRequests] = useState([
-        { senderId: 1, fileName: "Diploma1.pdf" },
-        { senderId: 2, fileName: "Diploma2.pdf" },
-        { senderId: 3, fileName: "Diploma3.pdf" },
-        { senderId: 4, fileName: "Diploma4.pdf" },
-        { senderId: 5, fileName: "Diploma5.pdf" },
-        { senderId: 6, fileName: "Diploma6.pdf" },
-        { senderId: 7, fileName: "Diploma7.pdf" },
-        { senderId: 8, fileName: "Diploma8.pdf" },
-        { senderId: 9, fileName: "Diploma9.pdf" },
-        { senderId: 10, fileName: "Diploma10.pdf" }
-    ]);
+    const [verifyRequests, setVerifyRequests] = useState([]);
 
+        useEffect(() => {
+        const fetchDiplomas = async () => {
+            try {
+                const response = await fetch("http://localhost:5250/api/Doctor/Diplomas");
+                if (!response.ok) {
+                    throw new Error("Failed to fetch diplomas");
+                }
+                const data = await response.json();
+                console.log(data);
+                setVerifyRequests(data);
+            } catch (error) {
+                console.error("Error fetching diplomas:", error);
+            }
+        };
+
+        fetchDiplomas();
+    }, []);
     const handleDownload = async (doctorId) => {
         try {
             const response = await fetch(`http://localhost:5250/api/Doctor/DownloadDiploma/${doctorId}`);
