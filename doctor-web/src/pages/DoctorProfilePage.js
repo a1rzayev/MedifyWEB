@@ -38,7 +38,7 @@ const DoctorProfilePage = () => {
 
         const fetchSpecialities = async () => {
             try {
-                const response = await axios.get("http://localhost:5250/api/Doctor/Specialities");
+                const response = await axios.get("http://localhost:5250/api/Enum/Specialities");
                 setSpecialities(response.data);
             } catch (error) {
                 console.error("Error fetching specialities:", error);
@@ -47,7 +47,7 @@ const DoctorProfilePage = () => {
 
         const fetchGenders = async () => {
             try {
-                const response = await axios.get("http://localhost:5250/api/Doctor/Genders");
+                const response = await axios.get("http://localhost:5250/api/Enum/Genders");
                 setGenders(response.data);
             } catch (error) {
                 console.error("Error fetching genders:", error);

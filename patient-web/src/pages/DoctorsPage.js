@@ -165,7 +165,7 @@ const DoctorsPage = () => {
 
     useEffect(() => {
         const fetchSpecialities = async () => {
-            const response = await fetch('http://localhost:5250/api/Doctor/Specialities');
+            const response = await fetch('http://localhost:5250/api/Enum/Specialities');
             const data = await response.json();
             setSpecialities(data);
         };
@@ -182,31 +182,31 @@ const DoctorsPage = () => {
     });
 
 
-    const handleRequest = async (doctorId) => {
-        try {
-            const response = await fetch(`http://localhost:5250/api/Patient/ReuqestRendezvouz/${doctorId}/${userId}`, {
-                method: 'POST',  // Use PUT method
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    // Add any necessary data to be sent in the request body
-                    status: 'requested',  // Example of data you may want to send
-                }),
-            });
+    // const handleRequest = async (doctorId) => {
+    //     try {
+    //         const response = await fetch(`http://localhost:5250/api/Patient/ReuqestRendezvouz/${doctorId}/${userId}`, {
+    //             method: 'POST',  // Use PUT method
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({
+    //                 // Add any necessary data to be sent in the request body
+    //                 status: 'requested',  // Example of data you may want to send
+    //             }),
+    //         });
 
-            if (!response.ok) {
-                throw new Error('Request failed');
-            }
+    //         if (!response.ok) {
+    //             throw new Error('Request failed');
+    //         }
 
-            // Handle success (e.g., show a success message or update UI)
-            const data = await response.json();
-            console.log('Response:', data);
-        } catch (error) {
-            // Handle error (e.g., show an error message)
-            console.error('Error:', error);
-        }
-    };
+    //         // Handle success (e.g., show a success message or update UI)
+    //         const data = await response.json();
+    //         console.log('Response:', data);
+    //     } catch (error) {
+    //         // Handle error (e.g., show an error message)
+    //         console.error('Error:', error);
+    //     }
+    // };
 
     const handleLoginRedirect = () => {
         navigate("/login");

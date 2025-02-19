@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const UserProfilePage = () => {
+    const { id } = useParams(); // Get the 'id' from the URL
     const [user, setUser] = useState({
         name: '',
         surname: '',
@@ -17,70 +18,64 @@ const UserProfilePage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
     const navigate = useNavigate();
-
     const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem('accessToken') !== null);
 
     useEffect(() => {
         if (!isAuthenticated) {
-            navigate('/login'); // Redirect to login page if not authenticated
+            navigate('/login'); // Redirect if not authenticated
         }
     }, [isAuthenticated, navigate]);
 
-    // Fetch user data
+    // Fetch user data using the 'id' from the URL
     useEffect(() => {
-        if (isAuthenticated) {
-            const userId = 1; // Example: you can get the user ID dynamically if needed
-
-            axios.get(`http://localhost:5250/api/Patient/${userId}`)
+        if (isAuthenticated && id) {
+            axios.get(`http://localhost:5250/api/Patient/${id}`)
                 .then(response => {
                     setUser(response.data);
                     setIsLoading(false);
                 })
-                .catch(err => {
+                .catch(() => {
                     setError('Failed to load user data.');
                     setIsLoading(false);
                 });
         }
-    }, [isAuthenticated]);
+    }, [isAuthenticated, id]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setUser({ ...user, [name]: value });
+        setUser(prev => ({ ...prev, [name]: value }));
     };
 
     const handleAvatarChange = (e) => {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onload = () => setUser({ ...user, avatar: reader.result });
+            reader.onload = () => setUser(prev => ({ ...prev, avatar: reader.result }));
             reader.readAsDataURL(file);
         }
     };
 
-    const handleLogout = (e) => {
+    const handleLogout = () => {
         localStorage.removeItem('accessToken');
         setIsAuthenticated(false);
         navigate('/login');
-        window.location.reload();
-    }
+    };
 
     const handleSave = () => {
         console.log('User data saved:', user);
+        // Optionally, send a PUT request to save changes
+        // axios.put(`http://localhost:5250/api/Patient/${id}`, user)
+        //     .then(() => alert('Profile updated!'))
+        //     .catch(() => alert('Failed to save changes.'));
     };
 
-    if (isLoading) {
-        return <div>Loading...</div>;
-    }
-
-    // if (error) {
-    //     return <div>{error}</div>;
-    // }
+    if (isLoading) return <div>Loading...</div>;
+    if (error) return <div>{error}</div>;
 
     return (
         <div className="container py-4">
             <h1 className="mb-4">User Profile</h1>
 
-            {/* Avatar and File Upload */}
             <div className="d-flex align-items-center mb-4">
                 <img
                     src={user.avatar}
@@ -91,49 +86,25 @@ const UserProfilePage = () => {
                 <input type="file" className="form-control" onChange={handleAvatarChange} />
             </div>
 
-            {/* Form */}
             <form style={{ maxWidth: '600px', margin: '0 auto' }}>
                 <div className="mb-3">
                     <label className="form-label">First Name</label>
-                    <input
-                        type="text"
-                        name="name"
-                        value={user.name}
-                        onChange={handleChange}
-                        className="form-control"
-                    />
+                    <input type="text" name="name" value={user.name} onChange={handleChange} className="form-control" />
                 </div>
 
                 <div className="mb-3">
                     <label className="form-label">Last Name</label>
-                    <input
-                        type="text"
-                        name="surname"
-                        value={user.surname}
-                        onChange={handleChange}
-                        className="form-control"
-                    />
+                    <input type="text" name="surname" value={user.surname} onChange={handleChange} className="form-control" />
                 </div>
 
                 <div className="mb-3">
                     <label className="form-label">Date of Birth</label>
-                    <input
-                        type="date"
-                        name="birthdate"
-                        value={user.birthdate}
-                        onChange={handleChange}
-                        className="form-control"
-                    />
+                    <input type="date" name="birthdate" value={user.birthdate} onChange={handleChange} className="form-control" />
                 </div>
 
                 <div className="mb-3">
                     <label className="form-label">Gender</label>
-                    <select
-                        name="gender"
-                        value={user.gender}
-                        onChange={handleChange}
-                        className="form-select"
-                    >
+                    <select name="gender" value={user.gender} onChange={handleChange} className="form-select">
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
                     </select>
@@ -141,52 +112,21 @@ const UserProfilePage = () => {
 
                 <div className="mb-3">
                     <label className="form-label">Phone Number</label>
-                    <input
-                        type="text"
-                        name="phone"
-                        value={user.phone}
-                        onChange={handleChange}
-                        className="form-control"
-                    />
+                    <input type="text" name="phone" value={user.phone} onChange={handleChange} className="form-control" />
                 </div>
 
                 <div className="mb-3">
                     <label className="form-label">Email</label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={user.email}
-                        onChange={handleChange}
-                        className="form-control"
-                    />
+                    <input type="email" name="email" value={user.email} onChange={handleChange} className="form-control" />
                 </div>
 
                 <div className="mb-3">
                     <label className="form-label">Date Joined</label>
-                    <input
-                        type="date"
-                        name="dateJoined"
-                        value={user.dateJoined}
-                        readOnly
-                        className="form-control"
-                    />
+                    <input type="date" name="dateJoined" value={user.dateJoined} readOnly className="form-control" />
                 </div>
-                <button
-                
-                    type="button"
-                    className="btn btn-primary mt-3"
-                    onClick={handleLogout}
-                >
-                    Logout
-                </button>
 
-                <button
-                    type="button"
-                    onClick={handleSave}
-                    className="btn btn-primary mt-3"
-                >
-                    Save Changes
-                </button>
+                <button type="button" className="btn btn-danger mt-3 me-2" onClick={handleLogout}>Logout</button>
+                <button type="button" className="btn btn-primary mt-3" onClick={handleSave}>Save Changes</button>
             </form>
         </div>
     );

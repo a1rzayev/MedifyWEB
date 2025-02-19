@@ -21,7 +21,7 @@ const UserProfilePage = () => {
     const [genders, setGenders] = useState([]);
 
     useEffect(() => {
-        axios.get("http://localhost:5250/api/Patient/Genders")
+        axios.get("http://localhost:5250/api/Enum/Genders")
             .then(response => setGenders(response.data))
             .catch(error => console.error("Cinslər yüklənərkən xəta baş verdi", error));
 
