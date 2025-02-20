@@ -22,8 +22,15 @@ const UserProfilePage = () => {
 
     useEffect(() => {
         axios.get("http://localhost:5250/api/Enum/Genders")
-            .then(response => setGenders(response.data))
+            .then(response => {
+                console.log("API Response:", response.data);
+                setGenders(Array.isArray(response.data) ? response.data : []);
+            })
             .catch(error => console.error("Cinslər yüklənərkən xəta baş verdi", error));
+    }, []);
+
+    useEffect(() => {
+
 
         axios.get(`http://localhost:5250/api/Patient/${id}`)
             .then(response => {

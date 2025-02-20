@@ -36,20 +36,23 @@ const DoctorsPage = () => {
     }, []);
 
     useEffect(() => {
-      const fetchSpecialities = async () => {
-          try {
-              const response = await fetch('http://localhost:5250/api/Enum/Specialities');
-              const data = await response.json();
-              console.log("Fetched specialities:", data);  // 👈 Check console output
-              setSpecialities(Array.isArray(data) ? data : []);  // Ensure it's an array
-          } catch (error) {
-              console.error("Error fetching specialities:", error);
-              setSpecialities([]);  // Avoid map errors on failure
-          }
-      };
-  
-      fetchSpecialities();
-  }, []);
+        const fetchSpecialities = async () => {
+            try {
+                const response = await fetch('http://localhost:5250/api/Enum/Specialities');
+                const data = await response.json();
+                console.log("Fetched hospital types:", data);  // Check updated console output
+    
+                // Access the 'result' property where the array is stored
+                setSpecialities(Array.isArray(data.result) ? data.result : []);
+            } catch (error) {
+                console.error("Error fetching hospital types:", error);
+                setSpecialities([]);  // Prevent map errors on failure
+            }
+        };
+    
+        fetchSpecialities();
+    }, []);
+    
   
 
 
