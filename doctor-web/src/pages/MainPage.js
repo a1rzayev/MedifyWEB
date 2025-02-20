@@ -43,6 +43,7 @@ const MainPage = () => {
                 try {
                     const response = await fetch(`http://localhost:5250/api/Doctor/RendezvouzRequests/${id}`);
                     const data = await response.json();
+                    console.log(id);
                     setLogs(data);
                 } catch (error) {
                     console.error("Failed to fetch logs:", error);
