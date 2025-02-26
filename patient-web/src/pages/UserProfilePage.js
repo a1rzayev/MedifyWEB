@@ -21,13 +21,19 @@ const UserProfilePage = () => {
     const [genders, setGenders] = useState([]);
 
     useEffect(() => {
-        axios.get("http://localhost:5250/api/Enum/Genders")
-            .then(response => {
-                console.log("API Response:", response.data);
-                setGenders(Array.isArray(response.data) ? response.data : []);
-            })
-            .catch(error => console.error("Cinslər yüklənərkən xəta baş verdi", error));
-    }, []);
+        const fetchEnums = async () => {
+            try {
+                const [gendersResponse] = await Promise.all([
+                    axios.get("http://localhost:5250/api/Enum/Genders")
+                ]);
+                setGenders(gendersResponse.data.result);
+            } catch (error) {
+                console.error("Error fetching enums:", error);
+            }
+        };
+
+        fetchEnums()
+    }, [id]);
 
     useEffect(() => {
 
@@ -110,22 +116,15 @@ const UserProfilePage = () => {
                         />
                     </div>
 
-                    <div className="mb-3">
-                        <label className="form-label">Cins</label>
-                        <select
-                            name="gender"
-                            className="form-select"
-                            value={user.gender}
-                            onChange={handleChange}
-                        >
-                            <option value="">Cins seçin</option>
-                            {genders.map((gender, index) => (
-                                <option key={index} value={index}>
-                                    {gender}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                            <div className="mb-3">
+                                <label className="form-label">Gender</label>
+                                <select name="gender" className="form-control" value={user.gender} onChange={handleChange} required>
+                                    <option value="">Select Gender</option>
+                                    {genders.map((gender, index) => (
+                                        <option key={gender} value={index}>{gender}</option>
+                                    ))}
+                                </select>
+                            </div>
 
                     <div className="mb-3">
                         <label className="form-label">Telefon</label>
